@@ -14,7 +14,8 @@
       <button class="btn-primary" (click)="downloadProjectsAsCSV()" title="Download projects as CSV">
         📥 Download CSV
       </button>
-      <button class="btn-primary" (click)="showCreateForm = true" *ngIf="canAdd() && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
+      <button class="btn-primary" (click)="showCreateForm = true"
+        *ngIf="canAdd() && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
         <i class="icon">+</i>
         Add Project
       </button>
@@ -34,7 +35,8 @@
   </div>
 
   <!-- Status Cards Section -->
-  <div class="status-cards" *ngIf="projectStatusCounts && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
+  <div class="status-cards"
+    *ngIf="projectStatusCounts && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
     <!-- All Projects -->
     <div class="status-card">
       <div class="card-header">
@@ -152,12 +154,8 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="store_code">Store Code *</label>
-              <input type="text"
-                     id="store_code"
-                     formControlName="store_code"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('store_code')"
-                     placeholder="Enter store code">
+              <input type="text" id="store_code" formControlName="store_code" class="form-control"
+                [class.error]="isFieldInvalid('store_code')" placeholder="Enter store code">
               <div class="error-message" *ngIf="isFieldInvalid('store_code')">
                 Store code is required
               </div>
@@ -165,12 +163,8 @@
 
             <div class="form-group">
               <label for="store_name">Store Name *</label>
-              <input type="text"
-                     id="store_name"
-                     formControlName="store_name"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('store_name')"
-                     placeholder="Enter store name">
+              <input type="text" id="store_name" formControlName="store_name" class="form-control"
+                [class.error]="isFieldInvalid('store_name')" placeholder="Enter store name">
               <div class="error-message" *ngIf="isFieldInvalid('store_name')">
                 Store name is required
               </div>
@@ -178,12 +172,8 @@
 
             <div class="form-group">
               <label for="project_code">Project Code *</label>
-              <input type="text"
-                     id="project_code"
-                     formControlName="project_code"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('project_code')"
-                     placeholder="Enter project code">
+              <input type="text" id="project_code" formControlName="project_code" class="form-control"
+                [class.error]="isFieldInvalid('project_code')" placeholder="Enter project code">
               <div class="error-message" *ngIf="isFieldInvalid('project_code')">
                 Project code is required
               </div>
@@ -220,11 +210,8 @@
             <!-- State Dropdown -->
             <div class="form-group">
               <label for="state">State <span class="text-danger">*</span></label>
-              <select id="state"
-                      formControlName="state"
-                      class="form-control"
-                      (change)="onStateChange($event)"
-                      [class.is-invalid]="isFieldInvalid('state')">
+              <select id="state" formControlName="state" class="form-control" (change)="onStateChange($event)"
+                [class.is-invalid]="isFieldInvalid('state')">
                 <option value="">Select State</option>
                 <option *ngFor="let state of statesList" [value]="state.name">{{ state.name }}</option>
               </select>
@@ -236,11 +223,9 @@
             <!-- City Dropdown -->
             <div class="form-group">
               <label for="city">City <span class="text-danger">*</span></label>
-              <select id="city"
-                      formControlName="city"
-                      class="form-control"
-                      [disabled]="!selectedState || filteredCitiesList.length === 0"
-                      [class.is-invalid]="isFieldInvalid('city')">
+              <select id="city" formControlName="city" class="form-control"
+                [disabled]="!selectedState || filteredCitiesList.length === 0"
+                [class.is-invalid]="isFieldInvalid('city')">
                 <option value="">Select City</option>
                 <option *ngFor="let city of filteredCitiesList" [value]="city.name">{{ city.name }}</option>
               </select>
@@ -257,16 +242,14 @@
 
             <div class="form-group">
               <label for="site_lat_long">Site Lat/Long</label>
-              <input type="text"
-                     id="site_lat_long"
-                     formControlName="site_lat_long"
-                     class="form-control"
-                     placeholder="Enter coordinates">
+              <input type="text" id="site_lat_long" formControlName="site_lat_long" class="form-control"
+                placeholder="Enter coordinates">
             </div>
 
             <div class="form-group full-width">
               <label for="address">Address</label>
-              <textarea id="address" formControlName="address" class="form-control" placeholder="Enter full address" rows="3"></textarea>
+              <textarea id="address" formControlName="address" class="form-control" placeholder="Enter full address"
+                rows="3"></textarea>
             </div>
           </div>
         </div>
@@ -311,20 +294,14 @@
 
             <div class="form-group">
               <label for="property_area_sqft">Property Area (Sqft)</label>
-              <input type="number"
-                     id="property_area_sqft"
-                     formControlName="property_area_sqft"
-                     class="form-control"
-                     placeholder="Enter area in sqft">
+              <input type="number" id="property_area_sqft" formControlName="property_area_sqft" class="form-control"
+                placeholder="Enter area in sqft">
             </div>
 
             <div class="form-group">
               <label for="actual_carpet_area_sqft">Actual Carpet Area as per Recee (sqft)</label>
-              <input type="number"
-                     id="actual_carpet_area_sqft"
-                     formControlName="actual_carpet_area_sqft"
-                     class="form-control"
-                     placeholder="Enter carpet area in sqft">
+              <input type="number" id="actual_carpet_area_sqft" formControlName="actual_carpet_area_sqft"
+                class="form-control" placeholder="Enter carpet area in sqft">
             </div>
           </div>
         </div>
@@ -335,50 +312,33 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="ll_ho_date">LL HO Date</label>
-              <input type="date"
-                     id="ll_ho_date"
-                     formControlName="ll_ho_date"
-                     class="form-control">
+              <input type="date" id="ll_ho_date" formControlName="ll_ho_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="launch_date">Launch Date</label>
-              <input type="date"
-                     id="launch_date"
-                     formControlName="launch_date"
-                     class="form-control">
+              <input type="date" id="launch_date" formControlName="launch_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="project_handover_date">Project Handover Date</label>
-              <input type="date"
-                     id="project_handover_date"
-                     formControlName="project_handover_date"
-                     class="form-control">
+              <input type="date" id="project_handover_date" formControlName="project_handover_date"
+                class="form-control">
             </div>
 
             <div class="form-group">
               <label for="loi_release_date">LOI Release Date</label>
-              <input type="date"
-                     id="loi_release_date"
-                     formControlName="loi_release_date"
-                     class="form-control">
+              <input type="date" id="loi_release_date" formControlName="loi_release_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="token_release_date">Token Release Date</label>
-              <input type="date"
-                     id="token_release_date"
-                     formControlName="token_release_date"
-                     class="form-control">
+              <input type="date" id="token_release_date" formControlName="token_release_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="recee_date">Recee Date</label>
-              <input type="date"
-                     id="recee_date"
-                     formControlName="recee_date"
-                     class="form-control">
+              <input type="date" id="recee_date" formControlName="recee_date" class="form-control">
             </div>
           </div>
         </div>
@@ -433,9 +393,7 @@
             <!-- Token Released -->
             <div class="form-group">
               <label for="token_released">Token Released</label>
-              <select id="token_released"
-                      formControlName="token_released"
-                      class="form-control">
+              <select id="token_released" formControlName="token_released" class="form-control">
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
@@ -445,15 +403,15 @@
             <!-- Power Availability -->
             <div class="form-group">
               <label for="power_availability_kva">Power Availability (kVA)</label>
-              <select id="power_availability_kva"
-                      formControlName="power_availability_kva"
-                      class="form-control">
+              <select id="power_availability_kva" formControlName="power_availability_kva" class="form-control">
                 <option value="">Select</option>
                 <option value="45 KVA Available">45 KVA Available</option>
                 <option value="Power Connection Not available">Power Connection Not available</option>
                 <option value=">35 KVA Available">>35 KVA Available</option>
-                <option value="<25 KVA Available"><25 KVA Available</option>
-                <option value="<5 KVA Available"><5 KVA Available</option>
+                <option value="<25 KVA Available">
+                  <25 KVA Available</option>
+                <option value="<5 KVA Available">
+                  <5 KVA Available</option>
               </select>
             </div>
 
@@ -472,7 +430,8 @@
               </button>
             </div>
             <div class="dynamic-items" formArrayName="assigned_users">
-              <div class="dynamic-item" *ngFor="let user of assignedUsersArray.controls; let i = index" [formGroupName]="i">
+              <div class="dynamic-item" *ngFor="let user of assignedUsersArray.controls; let i = index"
+                [formGroupName]="i">
                 <div class="dynamic-item-content">
                   <div class="form-group">
                     <label>User</label>
@@ -506,12 +465,9 @@
           <!-- Document Upload -->
           <div class="form-group">
             <label for="document-upload">Upload Document</label>
-            <input type="file"
-                   id="document-upload"
-                   (change)="onDocumentFileSelected($event)"
-                   accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
-                   class="form-control"
-                   [disabled]="uploadingDocument">
+            <input type="file" id="document-upload" (change)="onDocumentFileSelected($event)"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" class="form-control"
+              [disabled]="uploadingDocument">
             <small class="form-text text-muted">
               Allowed types: PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, JPEG, PNG (Max 10MB)
             </small>
@@ -542,10 +498,7 @@
                     <span class="file-size">{{ getFileSize(file.size) }}</span>
                   </div>
                 </div>
-                <button type="button"
-                        class="btn-remove"
-                        (click)="removePendingDocument(i)"
-                        title="Remove file">
+                <button type="button" class="btn-remove" (click)="removePendingDocument(i)" title="Remove file">
                   ×
                 </button>
               </div>
@@ -568,17 +521,11 @@
                   </div>
                 </div>
                 <div class="document-actions">
-                  <button type="button"
-                          class="btn-download"
-                          (click)="downloadDocument(doc)"
-                          title="Download">
+                  <button type="button" class="btn-download" (click)="downloadDocument(doc)" title="Download">
                     ⬇
                   </button>
-                  <button type="button"
-                          class="btn-remove"
-                          (click)="deleteDocument(doc)"
-                          title="Delete"
-                          *ngIf="canDelete()">
+                  <button type="button" class="btn-remove" (click)="deleteDocument(doc)" title="Delete"
+                    *ngIf="canDelete()">
                     ×
                   </button>
                 </div>
@@ -624,12 +571,8 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="edit_store_code">Store Code *</label>
-              <input type="text"
-                     id="edit_store_code"
-                     formControlName="store_code"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('store_code', editProjectForm)"
-                     placeholder="Enter store code">
+              <input type="text" id="edit_store_code" formControlName="store_code" class="form-control"
+                [class.error]="isFieldInvalid('store_code', editProjectForm)" placeholder="Enter store code">
               <div class="error-message" *ngIf="isFieldInvalid('store_code', editProjectForm)">
                 Store code is required
               </div>
@@ -637,12 +580,8 @@
 
             <div class="form-group">
               <label for="edit_store_name">Store Name *</label>
-              <input type="text"
-                     id="edit_store_name"
-                     formControlName="store_name"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('store_name', editProjectForm)"
-                     placeholder="Enter store name">
+              <input type="text" id="edit_store_name" formControlName="store_name" class="form-control"
+                [class.error]="isFieldInvalid('store_name', editProjectForm)" placeholder="Enter store name">
               <div class="error-message" *ngIf="isFieldInvalid('store_name', editProjectForm)">
                 Store name is required
               </div>
@@ -650,12 +589,8 @@
 
             <div class="form-group">
               <label for="edit_project_code">Project Code *</label>
-              <input type="text"
-                     id="edit_project_code"
-                     formControlName="project_code"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('project_code', editProjectForm)"
-                     placeholder="Enter project code">
+              <input type="text" id="edit_project_code" formControlName="project_code" class="form-control"
+                [class.error]="isFieldInvalid('project_code', editProjectForm)" placeholder="Enter project code">
               <div class="error-message" *ngIf="isFieldInvalid('project_code', editProjectForm)">
                 Project code is required
               </div>
@@ -679,21 +614,14 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="edit_zone">Zone</label>
-              <input type="text"
-                     id="edit_zone"
-                     formControlName="zone"
-                     class="form-control"
-                     placeholder="Enter zone">
+              <input type="text" id="edit_zone" formControlName="zone" class="form-control" placeholder="Enter zone">
             </div>
 
 
             <div class="form-group" *ngIf="showEditForm">
               <label for="editState">State <span class="text-danger">*</span></label>
-              <select id="editState"
-                      formControlName="state"
-                      class="form-control"
-                      (change)="onEditStateChange($event)"
-                      [class.is-invalid]="isFieldInvalid('state', editProjectForm)">
+              <select id="editState" formControlName="state" class="form-control" (change)="onEditStateChange($event)"
+                [class.is-invalid]="isFieldInvalid('state', editProjectForm)">
                 <option value="">Select State</option>
                 <option *ngFor="let state of statesList" [value]="state.name">{{ state.name }}</option>
               </select>
@@ -705,11 +633,9 @@
 
             <div class="form-group" *ngIf="showEditForm">
               <label for="editCity">City <span class="text-danger">*</span></label>
-              <select id="editCity"
-                      formControlName="city"
-                      class="form-control"
-                      [disabled]="!selectedState || filteredCitiesList.length === 0"
-                      [class.is-invalid]="isFieldInvalid('city', editProjectForm)">
+              <select id="editCity" formControlName="city" class="form-control"
+                [disabled]="!selectedState || filteredCitiesList.length === 0"
+                [class.is-invalid]="isFieldInvalid('city', editProjectForm)">
                 <option value="">Select City</option>
                 <option *ngFor="let city of filteredCitiesList" [value]="city.name">{{ city.name }}</option>
               </select>
@@ -726,16 +652,14 @@
 
             <div class="form-group">
               <label for="edit_site_lat_long">Site Lat/Long</label>
-              <input type="text"
-                     id="edit_site_lat_long"
-                     formControlName="site_lat_long"
-                     class="form-control"
-                     placeholder="Enter coordinates">
+              <input type="text" id="edit_site_lat_long" formControlName="site_lat_long" class="form-control"
+                placeholder="Enter coordinates">
             </div>
 
             <div class="form-group full-width">
               <label for="edit_address">Address</label>
-              <textarea id="edit_address" formControlName="address" class="form-control" placeholder="Enter full address" rows="3"></textarea>
+              <textarea id="edit_address" formControlName="address" class="form-control"
+                placeholder="Enter full address" rows="3"></textarea>
             </div>
           </div>
         </div>
@@ -777,11 +701,8 @@
 
             <div class="form-group">
               <label for="edit_property_area_sqft">Property Area (Sqft)</label>
-              <input type="number"
-                     id="edit_property_area_sqft"
-                     formControlName="property_area_sqft"
-                     class="form-control"
-                     placeholder="Enter area in sqft">
+              <input type="number" id="edit_property_area_sqft" formControlName="property_area_sqft"
+                class="form-control" placeholder="Enter area in sqft">
             </div>
           </div>
         </div>
@@ -792,50 +713,33 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="edit_ll_ho_date">LL HO Date</label>
-              <input type="date"
-                     id="edit_ll_ho_date"
-                     formControlName="ll_ho_date"
-                     class="form-control">
+              <input type="date" id="edit_ll_ho_date" formControlName="ll_ho_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="edit_launch_date">Launch Date</label>
-              <input type="date"
-                     id="edit_launch_date"
-                     formControlName="launch_date"
-                     class="form-control">
+              <input type="date" id="edit_launch_date" formControlName="launch_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="edit_project_handover_date">Project Handover Date</label>
-              <input type="date"
-                     id="edit_project_handover_date"
-                     formControlName="project_handover_date"
-                     class="form-control">
+              <input type="date" id="edit_project_handover_date" formControlName="project_handover_date"
+                class="form-control">
             </div>
 
             <div class="form-group">
               <label for="edit_loi_release_date">LOI Release Date</label>
-              <input type="date"
-                     id="edit_loi_release_date"
-                     formControlName="loi_release_date"
-                     class="form-control">
+              <input type="date" id="edit_loi_release_date" formControlName="loi_release_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="edit_token_release_date">Token Release Date</label>
-              <input type="date"
-                     id="edit_token_release_date"
-                     formControlName="token_release_date"
-                     class="form-control">
+              <input type="date" id="edit_token_release_date" formControlName="token_release_date" class="form-control">
             </div>
 
             <div class="form-group">
               <label for="edit_recee_date">Recee Date</label>
-              <input type="date"
-                     id="edit_recee_date"
-                     formControlName="recee_date"
-                     class="form-control">
+              <input type="date" id="edit_recee_date" formControlName="recee_date" class="form-control">
             </div>
           </div>
         </div>
@@ -846,11 +750,8 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="edit_recee_status">Recee Status</label>
-              <input type="text"
-                     id="edit_recee_status"
-                     formControlName="recee_status"
-                     class="form-control"
-                     placeholder="Enter recee status">
+              <input type="text" id="edit_recee_status" formControlName="recee_status" class="form-control"
+                placeholder="Enter recee status">
             </div>
 
             <div class="form-group">
@@ -872,19 +773,14 @@
             <!-- Actual Carpet Area -->
             <div class="form-group">
               <label for="edit_actual_carpet_area_sqft">Actual Carpet Area as per Recee (sqft)</label>
-              <input type="number"
-                     id="edit_actual_carpet_area_sqft"
-                     formControlName="actual_carpet_area_sqft"
-                     class="form-control"
-                     placeholder="Enter carpet area in sqft">
+              <input type="number" id="edit_actual_carpet_area_sqft" formControlName="actual_carpet_area_sqft"
+                class="form-control" placeholder="Enter carpet area in sqft">
             </div>
 
             <!-- Token Released -->
             <div class="form-group">
               <label for="edit_token_released">Token Released</label>
-              <select id="edit_token_released"
-                      formControlName="token_released"
-                      class="form-control">
+              <select id="edit_token_released" formControlName="token_released" class="form-control">
                 <option value="">Select</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
@@ -894,15 +790,15 @@
             <!-- Power Availability -->
             <div class="form-group">
               <label for="edit_power_availability_kva">Power Availability (kVA)</label>
-              <select id="edit_power_availability_kva"
-                      formControlName="power_availability_kva"
-                      class="form-control">
+              <select id="edit_power_availability_kva" formControlName="power_availability_kva" class="form-control">
                 <option value="">Select</option>
                 <option value="45 KVA Available">45 KVA Available</option>
                 <option value="Power Connection Not available">Power Connection Not available</option>
                 <option value=">35 KVA Available">>35 KVA Available</option>
-                <option value="<25 KVA Available"><25 KVA Available</option>
-                <option value="<5 KVA Available"><5 KVA Available</option>
+                <option value="<25 KVA Available">
+                  <25 KVA Available</option>
+                <option value="<5 KVA Available">
+                  <5 KVA Available</option>
               </select>
             </div>
 
@@ -940,15 +836,15 @@
               </button>
             </div>
             <div class="dynamic-items" formArrayName="assigned_users">
-              <div class="dynamic-item" *ngFor="let user of editAssignedUsersArray.controls; let i = index" [formGroupName]="i">
+              <div class="dynamic-item" *ngFor="let user of editAssignedUsersArray.controls; let i = index"
+                [formGroupName]="i">
                 <div class="dynamic-item-content">
                   <div class="form-group">
                     <label>User</label>
                     <select formControlName="user_id" class="form-control">
                       <option value="">Select user</option>
-                      <option *ngFor="let availableUser of availableUsers"
-                              [value]="availableUser.id"
-                              [selected]="user.get('user_id')?.value == availableUser.id">
+                      <option *ngFor="let availableUser of availableUsers" [value]="availableUser.id"
+                        [selected]="user.get('user_id')?.value == availableUser.id">
                         {{ availableUser.email }}
                       </option>
                     </select>
@@ -983,7 +879,8 @@
         <!-- Document Upload Section -->
         <div class="form-group">
           <label>Upload Document</label>
-          <input type="file" (change)="onDocumentFileSelected($event)" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
+          <input type="file" (change)="onDocumentFileSelected($event)"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
         </div>
 
         <!-- List Uploaded Documents -->
@@ -1034,12 +931,8 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="user_email">Email *</label>
-              <input type="email"
-                     id="user_email"
-                     formControlName="email"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('email', userForm)"
-                     placeholder="Enter user email">
+              <input type="email" id="user_email" formControlName="email" class="form-control"
+                [class.error]="isFieldInvalid('email', userForm)" placeholder="Enter user email">
               <div class="error-message" *ngIf="isFieldInvalid('email', userForm)">
                 Valid email is required
               </div>
@@ -1047,12 +940,9 @@
 
             <div class="form-group">
               <label for="user_password">Password {{ selectedUser ? '' : '*' }}</label>
-              <input type="password"
-                     id="user_password"
-                     formControlName="password"
-                     class="form-control"
-                     [class.error]="isFieldInvalid('password', userForm)"
-                     [placeholder]="selectedUser ? 'Leave blank to keep current password' : 'Enter password'">
+              <input type="password" id="user_password" formControlName="password" class="form-control"
+                [class.error]="isFieldInvalid('password', userForm)"
+                [placeholder]="selectedUser ? 'Leave blank to keep current password' : 'Enter password'">
               <div class="error-message" *ngIf="isFieldInvalid('password', userForm)">
                 Password is required
               </div>
@@ -1097,11 +987,8 @@
     <!-- Search and Filter -->
     <div class="search-filter-section">
       <div class="search-container">
-        <input type="text"
-               [(ngModel)]="searchTerm"
-               (ngModelChange)="filterProjects()"
-               class="search-input"
-               placeholder="Search projects by store code, name, city...">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterProjects()" class="search-input"
+          placeholder="Search projects by store code, name, city...">
         <i class="search-icon">🔍</i>
       </div>
       <!-- In search-filter-section, after search container -->
@@ -1135,52 +1022,32 @@
             <!-- Column Filters Row -->
             <tr class="filter-row">
               <th>
-                <input type="text"
-                       placeholder="Filter Store Code"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.store_code"
-                       class="filter-input"
-                       title="Filter by Store Code">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('store_code')"
-                        *ngIf="filters.store_code">
+                <input type="text" placeholder="Filter Store Code" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.store_code" class="filter-input" title="Filter by Store Code">
+                <button class="clear-filter-btn" (click)="clearFilter('store_code')" *ngIf="filters.store_code">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter Store Name"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.store_name"
-                       class="filter-input"
-                       title="Filter by Store Name">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('store_name')"
-                        *ngIf="filters.store_name">
+                <input type="text" placeholder="Filter Store Name" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.store_name" class="filter-input" title="Filter by Store Name">
+                <button class="clear-filter-btn" (click)="clearFilter('store_name')" *ngIf="filters.store_name">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter Project Code"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.project_code"
-                       class="filter-input"
-                       title="Filter by Project Code">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('project_code')"
-                        *ngIf="filters.project_code">
+                <input type="text" placeholder="Filter Project Code" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.project_code" class="filter-input" title="Filter by Project Code">
+                <button class="clear-filter-btn" (click)="clearFilter('project_code')" *ngIf="filters.project_code">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.zone"
-                        class="filter-input"
-                        title="Filter by Zone">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.zone" class="filter-input"
+                  title="Filter by Zone">
                   <option value="">All Zones</option>
                   <option value="CENTRAL">CENTRAL</option>
                   <option value="WEST">WEST</option>
@@ -1188,97 +1055,69 @@
                   <option value="NORTH">NORTH</option>
                   <option value="SOUTH">SOUTH</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('zone')"
-                        *ngIf="filters.zone">
+                <button class="clear-filter-btn" (click)="clearFilter('zone')" *ngIf="filters.zone">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter City"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.city"
-                       class="filter-input"
-                       title="Filter by City">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('city')"
-                        *ngIf="filters.city">
+                <input type="text" placeholder="Filter City" (input)="applyColumnFilter()" [(ngModel)]="filters.city"
+                  class="filter-input" title="Filter by City">
+                <button class="clear-filter-btn" (click)="clearFilter('city')" *ngIf="filters.city">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.state"
-                        class="filter-input"
-                        title="Filter by State">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.state" class="filter-input"
+                  title="Filter by State">
                   <option value="">All States</option>
                   <option *ngFor="let state of getUniqueValues('state')" [value]="state">{{ state }}</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('state')"
-                        *ngIf="filters.state">
+                <button class="clear-filter-btn" (click)="clearFilter('state')" *ngIf="filters.state">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter Lat/Long"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.site_lat_long"
-                       class="filter-input"
-                       title="Filter by Coordinates">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('site_lat_long')"
-                        *ngIf="filters.site_lat_long">
+                <input type="text" placeholder="Filter Lat/Long" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.site_lat_long" class="filter-input" title="Filter by Coordinates">
+                <button class="clear-filter-btn" (click)="clearFilter('site_lat_long')" *ngIf="filters.site_lat_long">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.store_type"
-                        class="filter-input"
-                        title="Filter by Store Type">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.store_type" class="filter-input"
+                  title="Filter by Store Type">
                   <option value="">All Store Types</option>
                   <option value="Dark Store">Dark Store</option>
                   <option value="Super Store">Super Store</option>
                   <option value="Cafe">Cafe</option>
                   <option value="Relocation">Relocation</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('store_type')"
-                        *ngIf="filters.store_type">
+                <button class="clear-filter-btn" (click)="clearFilter('store_type')" *ngIf="filters.store_type">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.site_type"
-                        class="filter-input"
-                        title="Filter by Site Type">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.site_type" class="filter-input"
+                  title="Filter by Site Type">
                   <option value="">All Site Types</option>
                   <option value="BTS">BTS</option>
                   <option value="Semi BTS">Semi BTS</option>
                   <option value="RTM">RTM</option>
                   <option value="C&E">C&E</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('site_type')"
-                        *ngIf="filters.site_type">
+                <button class="clear-filter-btn" (click)="clearFilter('site_type')" *ngIf="filters.site_type">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.project_status"
-                        class="filter-input"
-                        title="Filter by Project Status">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.project_status" class="filter-input"
+                  title="Filter by Project Status">
                   <option value="">All Status</option>
                   <option value="LL WIP">LL WIP</option>
                   <option value="Fitout WIP">Fitout WIP</option>
@@ -1286,140 +1125,94 @@
                   <option value="Project HO Complete">Project HO Complete</option>
                   <option value="LAUNCHED">LAUNCHED</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('project_status')"
-                        *ngIf="filters.project_status">
+                <button class="clear-filter-btn" (click)="clearFilter('project_status')" *ngIf="filters.project_status">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="date"
-                       (change)="applyColumnFilter()"
-                       [(ngModel)]="filters.ll_ho_date"
-                       class="filter-input"
-                       title="Filter by LL HO Date">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('ll_ho_date')"
-                        *ngIf="filters.ll_ho_date">
+                <input type="date" (change)="applyColumnFilter()" [(ngModel)]="filters.ll_ho_date" class="filter-input"
+                  title="Filter by LL HO Date">
+                <button class="clear-filter-btn" (click)="clearFilter('ll_ho_date')" *ngIf="filters.ll_ho_date">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="date"
-                       (change)="applyColumnFilter()"
-                       [(ngModel)]="filters.launch_date"
-                       class="filter-input"
-                       title="Filter by Launch Date">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('launch_date')"
-                        *ngIf="filters.launch_date">
+                <input type="date" (change)="applyColumnFilter()" [(ngModel)]="filters.launch_date" class="filter-input"
+                  title="Filter by Launch Date">
+                <button class="clear-filter-btn" (click)="clearFilter('launch_date')" *ngIf="filters.launch_date">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="date"
-                       (change)="applyColumnFilter()"
-                       [(ngModel)]="filters.project_handover_date"
-                       class="filter-input"
-                       title="Filter by Handover Date">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('project_handover_date')"
-                        *ngIf="filters.project_handover_date">
+                <input type="date" (change)="applyColumnFilter()" [(ngModel)]="filters.project_handover_date"
+                  class="filter-input" title="Filter by Handover Date">
+                <button class="clear-filter-btn" (click)="clearFilter('project_handover_date')"
+                  *ngIf="filters.project_handover_date">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.layout"
-                        class="filter-input"
-                        title="Filter by Layout">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.layout" class="filter-input"
+                  title="Filter by Layout">
                   <option value="">All Layouts</option>
                   <option value="Completed">Completed</option>
                   <option value="WIP">WIP</option>
                   <option value="Not Started">Not Started</option>
                   <option value="NA">NA</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('layout')"
-                        *ngIf="filters.layout">
+                <button class="clear-filter-btn" (click)="clearFilter('layout')" *ngIf="filters.layout">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.token_released"
-                        class="filter-input"
-                        title="Filter by Token Released">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.token_released" class="filter-input"
+                  title="Filter by Token Released">
                   <option value="">All</option>
                   <option value="Yes">Yes</option>
                   <option value="No">No</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('token_released')"
-                        *ngIf="filters.token_released">
+                <button class="clear-filter-btn" (click)="clearFilter('token_released')" *ngIf="filters.token_released">
                   ×
                 </button>
               </th>
 
               <th>
-                <select (change)="applyColumnFilter()"
-                        [(ngModel)]="filters.criticality"
-                        class="filter-input"
-                        title="Filter by Criticality">
+                <select (change)="applyColumnFilter()" [(ngModel)]="filters.criticality" class="filter-input"
+                  title="Filter by Criticality">
                   <option value="">All Criticality</option>
                   <option value="P0">P0</option>
                   <option value="P1">P1</option>
                   <option value="P2">P2</option>
                 </select>
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('criticality')"
-                        *ngIf="filters.criticality">
+                <button class="clear-filter-btn" (click)="clearFilter('criticality')" *ngIf="filters.criticality">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter Address"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.address"
-                       class="filter-input"
-                       title="Filter by Address">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('address')"
-                        *ngIf="filters.address">
+                <input type="text" placeholder="Filter Address" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.address" class="filter-input" title="Filter by Address">
+                <button class="clear-filter-btn" (click)="clearFilter('address')" *ngIf="filters.address">
                   ×
                 </button>
               </th>
 
               <th>
-                <input type="text"
-                       placeholder="Filter Created By"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.created_by"
-                       class="filter-input"
-                       title="Filter by Created By">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('created_by')"
-                        *ngIf="filters.created_by">
+                <input type="text" placeholder="Filter Created By" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.created_by" class="filter-input" title="Filter by Created By">
+                <button class="clear-filter-btn" (click)="clearFilter('created_by')" *ngIf="filters.created_by">
                   ×
                 </button>
               </th>
               <th>
-                <input type="text"
-                       placeholder="Filter Recee Status"
-                       (input)="applyColumnFilter()"
-                       [(ngModel)]="filters.recee_status"
-                       class="filter-input"
-                       title="Filter by Recee Status">
-                <button class="clear-filter-btn"
-                        (click)="clearFilter('recee_status')"
-                        *ngIf="filters.recee_status">
+                <input type="text" placeholder="Filter Recee Status" (input)="applyColumnFilter()"
+                  [(ngModel)]="filters.recee_status" class="filter-input" title="Filter by Recee Status">
+                <button class="clear-filter-btn" (click)="clearFilter('recee_status')" *ngIf="filters.recee_status">
                   ×
                 </button>
               </th>
@@ -1434,8 +1227,7 @@
             <tr>
               <th>Store Code</th>
               <th>
-                Store Name   <div class="column-resizer"
-                                  (mousedown)="startResize($event, 1)"></div>
+                Store Name <div class="column-resizer" (mousedown)="startResize($event, 1)"></div>
               </th>
               <th>Project Code</th>
               <th>Zone</th>
@@ -1461,7 +1253,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let project of filteredProjects" (dblclick)="onRowDoubleClick($event, project)" class="table-row">
+            <tr *ngFor="let project of filteredProjects" (dblclick)="onRowDoubleClick($event, project)"
+              class="table-row">
               <td>{{ project.store_code }}</td>
               <td>{{ project.store_name }}</td>
               <td>{{ project.project_code }}</td>
@@ -1480,15 +1273,19 @@
               <td>{{ project.criticality || '' }}</td>
               <td>{{ project.address || '' }}</td>
 
-              <td>{{ project.created_by_email ? (project.created_by_email | slice:0:(project.created_by_email.indexOf('@'))) : '' }}</td>
+              <td>{{ project.created_by_email ? (project.created_by_email |
+                slice:0:(project.created_by_email.indexOf('@'))) : '' }}</td>
               <td>{{ project.recee_status || '' }}</td>
               <td>{{ project.created_at ? (project.created_at | date) : '' }}</td>
               <!-- <td>{{ project.assigned_users?.length || 0 }}</td>-->
               <td>{{ project.tasks_count || 0 }}</td>
               <td *ngIf="canEdit() || canDelete() || canView()">
-                <button class="btn-action view" (click)="showProjectDetails(project)" title="View Project Details">👁️</button>
-                <button class="btn-action edit" (click)="editProject(project)" *ngIf="canEdit()" title="Edit Project">✏️</button>
-                <button class="btn-action delete" (click)="confirmDeleteProject(project)" *ngIf="canDelete()" title="Delete Project">🗑️</button>
+                <button class="btn-action view" (click)="showProjectDetails(project)"
+                  title="View Project Details">👁️</button>
+                <button class="btn-action edit" (click)="editProject(project)" *ngIf="canEdit()"
+                  title="Edit Project">✏️</button>
+                <button class="btn-action delete" (click)="confirmDeleteProject(project)" *ngIf="canDelete()"
+                  title="Delete Project">🗑️</button>
               </td>
             </tr>
             <tr *ngIf="filteredProjects.length === 0">
@@ -1552,7 +1349,8 @@
                   </div>
                   <div class="detail-item">
                     <label>Criticality:</label>
-                    <span class="criticality-badge" [class]="'criticality-' + (viewProject.criticality || 'none').toLowerCase()">
+                    <span class="criticality-badge"
+                      [class]="'criticality-' + (viewProject.criticality || 'none').toLowerCase()">
                       {{ viewProject.criticality || 'Not Set' }}
                     </span>
                   </div>
@@ -1600,7 +1398,8 @@
                   </div>
                   <div class="detail-item">
                     <label>Property Area:</label>
-                    <span>{{ viewProject.property_area_sqft ? (viewProject.property_area_sqft + ' sqft') : 'Not specified' }}</span>
+                    <span>{{ viewProject.property_area_sqft ? (viewProject.property_area_sqft + ' sqft') : 'Not
+                      specified' }}</span>
                   </div>
                 </div>
               </div>
@@ -1655,7 +1454,8 @@
 
                   <div class="detail-item">
                     <label>Actual Carpet Area (sqft):</label>
-                    <span>{{ viewProject.actual_carpet_area_sqft ? (viewProject.actual_carpet_area_sqft + ' sqft') : 'Not specified' }}</span>
+                    <span>{{ viewProject.actual_carpet_area_sqft ? (viewProject.actual_carpet_area_sqft + ' sqft') :
+                      'Not specified' }}</span>
                   </div>
 
                   <!-- Token Released -->
@@ -1748,10 +1548,8 @@
                     <div class="media-thumbnail">
                       <!-- Image Preview -->
                       <div class="image-preview" *ngIf="isImage(media.file_type)">
-                        <img [src]="getMediaUrl(media.file_path)"
-                             [alt]="media.file_name"
-                             (click)="openMediaModal(media)"
-                             class="preview-image">
+                        <img [src]="getMediaUrl(media.file_path)" [alt]="media.file_name"
+                          (click)="openMediaModal(media)" class="preview-image">
                         <div class="media-overlay">
                           <button class="view-button" (click)="openMediaModal(media)">
                             <i class="icon">👁️</i>
@@ -1788,7 +1586,7 @@
                     <div class="media-details">
                       <div class="media-name">{{ media.file_name }}</div>
                       <div class="media-info">
-                        <span class="file-type">{{ media.file_type?.toUpperCase() }}</span>
+                        <span class="file-type">{{ media.file_type.toUpperCase() }}</span>
                         <span class="file-size">{{ getFileSize(media.file_size) }}</span>
                       </div>
                     </div>
@@ -1834,7 +1632,8 @@
                       </div>
                     </div>
                     <div class="user-progress-circle">
-                      <div class="progress-circle" [style.background]="'conic-gradient(from 0deg, ' + getUserProgressColor(user.taskStats.avg_progress) + ' 0deg ' + (user.taskStats.avg_progress * 3.6) + 'deg, #e0e0e0 ' + (user.taskStats.avg_progress * 3.6) + 'deg 360deg)'">
+                      <div class="progress-circle"
+                        [style.background]="'conic-gradient(from 0deg, ' + getUserProgressColor(user.taskStats.avg_progress) + ' 0deg ' + (user.taskStats.avg_progress * 3.6) + 'deg, #e0e0e0 ' + (user.taskStats.avg_progress * 3.6) + 'deg 360deg)'">
                         <div class="progress-inner">
                           <span>{{ user.taskStats.avg_progress }}%</span>
                         </div>
@@ -1966,9 +1765,7 @@
       <div class="media-modal-body">
         <!-- Image Display -->
         <div class="modal-image-container" *ngIf="selectedMedia && isImage(selectedMedia.file_type)">
-          <img [src]="getMediaUrl(selectedMedia.file_path)"
-               [alt]="selectedMedia.file_name"
-               class="modal-image">
+          <img [src]="getMediaUrl(selectedMedia.file_path)" [alt]="selectedMedia.file_name" class="modal-image">
         </div>
 
         <!-- Video Display -->
@@ -1980,7 +1777,8 @@
         </div>
 
         <!-- File Info for other types -->
-        <div class="modal-file-info" *ngIf="selectedMedia && !isImage(selectedMedia.file_type) && !isVideo(selectedMedia.file_type)">
+        <div class="modal-file-info"
+          *ngIf="selectedMedia && !isImage(selectedMedia.file_type) && !isVideo(selectedMedia.file_type)">
           <div class="file-icon-large">📄</div>
           <h4>{{ selectedMedia.file_name }}</h4>
           <p>File Type: {{ selectedMedia.file_type?.toUpperCase() }}</p>
@@ -1996,9 +1794,7 @@
           <span>Type: {{ selectedMedia?.file_type?.toUpperCase() }}</span>
           <span>Size: {{ getFileSize(selectedMedia?.file_size) }}</span>
         </div>
-        <a [href]="getMediaUrl(selectedMedia?.file_path)"
-           target="_blank"
-           class="download-link">
+        <a [href]="getMediaUrl(selectedMedia?.file_path)" target="_blank" class="download-link">
           Download
         </a>
       </div>
@@ -2087,16 +1883,11 @@
               <td>{{ user.created_at | date:'short' }}</td>
               <td>{{ user.updated_at | date:'short' }}</td>
               <td *ngIf="canEdit() || canDelete()" class="actions-cell">
-                <button class="btn-action edit"
-                        (click)="editUser(user)"
-                        *ngIf="canEdit()"
-                        title="Edit User">
+                <button class="btn-action edit" (click)="editUser(user)" *ngIf="canEdit()" title="Edit User">
                   ✏️
                 </button>
-                <button class="btn-action delete"
-                        (click)="confirmDeleteUser(user)"
-                        *ngIf="canDelete()"
-                        title="Delete User">
+                <button class="btn-action delete" (click)="confirmDeleteUser(user)" *ngIf="canDelete()"
+                  title="Delete User">
                   🗑️
                 </button>
               </td>
@@ -2135,7 +1926,7 @@
           <button class="btn btn-primary btn-sm" (click)="addNewRow()">
             <i class="fas fa-plus"></i> Add Row
           </button>
-       
+
         </div>
 
         <!-- Responsive Table -->
@@ -2156,43 +1947,52 @@
               <tr *ngFor="let row of stateCityRows; let i = index" [class.editing]="editingRowIndex === i">
                 <!-- State -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row.State" class="input-sm" placeholder="State">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row.State" class="input-sm"
+                    placeholder="State">
                   <span *ngIf="editingRowIndex !== i">{{ row.State || '-' }}</span>
                 </td>
                 <!-- State Code -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['State Code']" class="input-sm" placeholder="Code">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['State Code']" class="input-sm"
+                    placeholder="Code">
                   <span *ngIf="editingRowIndex !== i">{{ row['State Code'] || '-' }}</span>
                 </td>
                 <!-- District Code -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Code']" class="input-sm" placeholder="Code">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Code']" class="input-sm"
+                    placeholder="Code">
                   <span *ngIf="editingRowIndex !== i">{{ row['District Code'] || '-' }}</span>
                 </td>
                 <!-- District Name -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Name']" class="input-sm" placeholder="District">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Name']" class="input-sm"
+                    placeholder="District">
                   <span *ngIf="editingRowIndex !== i">{{ row['District Name'] || '-' }}</span>
                 </td>
                 <!-- Town Code -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Code']" class="input-sm" placeholder="Code">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Code']" class="input-sm"
+                    placeholder="Code">
                   <span *ngIf="editingRowIndex !== i">{{ row['Town Code'] || '-' }}</span>
                 </td>
                 <!-- Town Name -->
                 <td>
-                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Name']" class="input-sm" placeholder="Town">
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Name']" class="input-sm"
+                    placeholder="Town">
                   <span *ngIf="editingRowIndex !== i">{{ row['Town Name'] || '-' }}</span>
                 </td>
                 <!-- Actions -->
                 <td class="actions">
                   <div *ngIf="editingRowIndex === i" class="btn-group">
                     <button class="btn btn-save" (click)="saveRow(i)" title="Save"><i class="fas fa-check"></i></button>
-                    <button class="btn btn-cancel" (click)="cancelEdit()" title="Cancel"><i class="fas fa-times"></i></button>
+                    <button class="btn btn-cancel" (click)="cancelEdit()" title="Cancel"><i
+                        class="fas fa-times"></i></button>
                   </div>
                   <div *ngIf="editingRowIndex !== i" class="btn-group">
-                    <button class="btn btn-edit" (click)="startEdit(i)" title="Edit"><i class="fas fa-edit">Update</i></button>
-                    <button class="btn btn-delete" (click)="deleteRow(i)" title="Delete"><i class="fas fa-trash">Remove</i></button>
+                    <button class="btn btn-edit" (click)="startEdit(i)" title="Edit"><i
+                        class="fas fa-edit">Update</i></button>
+                    <button class="btn btn-delete" (click)="deleteRow(i)" title="Delete"><i
+                        class="fas fa-trash">Remove</i></button>
                   </div>
                 </td>
               </tr>
@@ -2209,13 +2009,3 @@
   </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
