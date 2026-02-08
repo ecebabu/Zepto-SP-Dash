@@ -28,7 +28,7 @@ services:
   - type: web
     name: rdash-frontend
     runtime: static
-    buildCommand: cd RDash && npm ci && npm run build -- --configuration=production
+    buildCommand: cd RDash && npm install && npm run build -- --configuration=production
     staticPublishPath: RDash/dist/rdash/browser
     routes:
       - type: rewrite
