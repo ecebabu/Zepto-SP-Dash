@@ -7,8 +7,13 @@ function getEnv($key, $default = null) {
     return $value !== false ? $value : $default;
 }
 
+// Application Configuration (Must be first to determine defaults)
+define('APP_ENV', getEnv('APP_ENV', 'development'));
+define('DEBUG_MODE', APP_ENV === 'development');
+
 // Database Configuration
-define('DB_TYPE', getEnv('DB_TYPE', 'pgsql')); // pgsql for PostgreSQL
+define('DB_TYPE', getEnv('DB_TYPE', (APP_ENV === 'development' ? 'sqlite' : 'pgsql'))); // Default to sqlite in dev
+
 define('DB_HOST', getEnv('DB_HOST', 'localhost'));
 define('DB_PORT', getEnv('DB_PORT', '5432'));
 define('DB_NAME', getEnv('DB_NAME', 'rdash'));
@@ -25,6 +30,7 @@ if ($database_url) {
     define('DB_USER_FINAL', $db_parts['user']);
     define('DB_PASS_FINAL', $db_parts['pass']);
 } else {
+    // Only use these if not using SQLite (or if explicitly set)
     define('DB_HOST_FINAL', DB_HOST);
     define('DB_PORT_FINAL', DB_PORT);
     define('DB_NAME_FINAL', DB_NAME);
@@ -42,10 +48,6 @@ define('ALLOWED_ORIGINS', getEnv('ALLOWED_ORIGINS', 'http://localhost:4200'));
 // Upload Configuration
 define('MAX_UPLOAD_SIZE', getEnv('MAX_UPLOAD_SIZE', 10485760)); // 10MB
 define('UPLOAD_PATH', getEnv('UPLOAD_PATH', __DIR__ . '/uploads/'));
-
-// Application Configuration
-define('APP_ENV', getEnv('APP_ENV', 'development'));
-define('DEBUG_MODE', APP_ENV === 'development');
 
 // Ensure upload directory exists
 if (!file_exists(UPLOAD_PATH)) {
