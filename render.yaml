@@ -37,7 +37,6 @@ services:
     env: static
     buildCommand: cd RDash && npm install && npm run build -- --configuration=production
     staticPublishPath: RDash/dist/rdash/browser
-    region: oregon
     plan: free
     branch: main
     headers:
