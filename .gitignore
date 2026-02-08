@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+vendor/
+package-lock.json
+
+# Build outputs
+dist/
+.angular/
+*.log
+obj/
+bin/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.esproj.user
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+RDash/server/dbo/data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Uploads
+uploads/
+RDash/server/uploads/
+/tmp/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+RDash/server/php_errors.log
+RDash/server/error.log
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Solution files (keep .sln but ignore user-specific files)
+*.suo
+*.user
+.vs/

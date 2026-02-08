@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+vendor/
+package-lock.json
+
+# Build outputs
+dist/
+.angular/
+*.log
+obj/
+bin/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+server/dbo/data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.esproj.user
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Uploads
+uploads/
+server/uploads/
+/tmp/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+server/php_errors.log
+server/error.log
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

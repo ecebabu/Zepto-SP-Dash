@@ -1,0 +1,57 @@
+services:
+  # Backend PHP API
+  - type: web
+    name: rdash-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DB_TYPE
+        value: pgsql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rdash-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_LIFETIME
+        value: 14400
+      - key: ALLOWED_ORIGINS
+        value: https://rdash-frontend.onrender.com
+      - key: MAX_UPLOAD_SIZE
+        value: 10485760
+      - key: UPLOAD_PATH
+        value: /tmp/uploads
+
+  # Frontend Static Site
+  - type: web
+    name: rdash-frontend
+    env: static
+    buildCommand: npm install && npm run build --configuration=production
+    staticPublishPath: dist/rdash/browser
+    region: oregon
+    plan: free
+    branch: main
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: rdash-db
+    databaseName: rdash
+    user: rdash_user
+    plan: free
+    region: oregon

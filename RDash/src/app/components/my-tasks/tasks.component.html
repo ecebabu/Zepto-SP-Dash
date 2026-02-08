@@ -1,0 +1,1323 @@
+<div class="tasks-container">
+  <div class="tasks-header">
+    <div>
+      <h1>Tasks Explorer</h1>
+      <p *ngIf="!isAdmin()">Manage your assigned tasks</p>
+      <p *ngIf="isAdmin()">Check all project assigned to the users</p>
+    </div>
+
+    <div class="header-actions" *ngIf="isAdmin()">
+      <button class="btn btn-primary" (click)="openCreateTaskModal()">
+        <i class="icon-plus">+</i>
+        Create New Task
+      </button>
+    </div>
+  </div>
+
+  <!-- Task Statistics
+  <div class="task-stats" *ngIf="tasks.length > 0">
+    <div class="stat-card">
+      <div class="stat-number">{{ taskStats.total }}</div>
+      <div class="stat-label">Total Tasks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ taskStats.inProgress }}</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ taskStats.completed }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ taskStats.overdue }}</div>
+      <div class="stat-label">Overdue</div>
+    </div>
+  </div>
+    -->
+  <!-- Filters -->
+  <div class="filters-section">
+    <!--  <div class="filter-group">
+        <label>Assigned To:</label>
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()" class="filter-select">
+          <option value="">All Status</option>
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+          <option value="On Hold">On Hold</option>
+        </select>
+      </div>-->
+    <!--
+    <div class="filter-group">
+      <label>Priority:</label>
+      <select [(ngModel)]="selectedPriority" (change)="applyFilters()" class="filter-select">
+        <option value="">All Priorities</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+        <option value="Critical">Critical</option>
+      </select>
+    </div>-->
+
+    <div class="filter-group">
+      <label>Search:</label>
+      <input type="text"
+             [(ngModel)]="searchTerm"
+             (input)="applyFilters()"
+             placeholder="Search tasks..."
+             class="filter-input">
+    </div>
+  </div>
+
+  <!-- Tasks List -->
+  <div class="tasks-content">
+    <div *ngIf="loading" class="loading-message">
+      Loading tasks...
+    </div>
+
+    <div *ngIf="!loading && filteredTasks.length === 0" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <h3>No tasks found</h3>
+      <p *ngIf="!isAdmin()">You don't have any tasks assigned yet.</p>
+      <p *ngIf="isAdmin()">No tasks match your current filters.</p>
+    </div>
+
+    <div *ngIf="!loading && filteredTasks.length > 0" class="tasks-grid">
+      <div *ngFor="let task of filteredTasks"
+           class="task-card"
+           [class.overdue]="isTaskOverdue(task)"
+           [class.completed]="task.status === 'Completed'">
+
+        <div class="task-header">
+          <h3 class="task-title">{{ task.title }}</h3>
+          <div class="task-actions">
+            <button class="btn-icon"
+                    (click)="viewTask(task)"
+                    title="View Details">
+              👁️
+            </button>
+            <button *ngIf="canEditTask(task)"
+                    class="btn-icon"
+                    (click)="editTask(task)"
+                    title="Submit Task">
+              ✏️
+            </button>
+            <button *ngIf="isAdmin()"
+                    class="btn-icon btn-danger"
+                    (click)="deleteTask(task)"
+                    title="Delete Task">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="task-meta">
+          <span class="project-info">
+            {{ task.store_name }} - {{ task.project_code }}
+          </span>
+        </div>
+
+        <div class="task-description" *ngIf="task.description">
+          {{ task.description | slice:0:100 }}{{ task.description.length > 100 ? '...' : '' }}
+        </div>
+        <!--
+                <div class="task-details">
+                  <div class="task-status">
+                    <span class="status-badge" [class]="'status-' + task.status.toLowerCase().replace(' ', '-')">
+                      {{ task.status }}
+                    </span>
+                  </div>
+
+                  <div class="task-priority">
+                    <span class="priority-badge" [class]="'priority-' + task.priority.toLowerCase()">
+                      {{ task.priority }}
+                    </span>
+                  </div>
+                </div>
+        -->
+        <!--  <div class="task-progress">
+            <div class="progress-header">
+              <span>Progress: {{ task.progress_percentage }}%</span>
+              <span *ngIf="task.due_date" class="due-date">
+                Due: {{ formatDate(task.due_date) }}
+              </span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill"
+                   [style.width.%]="task.progress_percentage">
+              </div>
+            </div>
+          </div>-->
+
+        <div class="task-footer">
+          <div class="assignee-info">
+            <span *ngIf="task.assigned_to_email">
+              Assigned to: {{ task.assigned_to_email }}
+            </span>
+            <span *ngIf="!task.assigned_to_email" class="unassigned">
+              Unassigned
+            </span>
+          </div>
+          <div class="created-info">
+            Created: {{ formatDate(task.created_at) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Task View Modal -->
+<div *ngIf="showViewModal && selectedTask" class="modal-overlay" (click)="closeViewModal()">
+  <div class="modal-content large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ selectedTask.title }}</h2>
+      <button class="btn-close" (click)="closeViewModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="task-view-content">
+        <div class="task-info-grid">
+          <div class="info-item">
+            <label>Project:</label>
+            <span>{{ selectedTask.store_name }} - {{ selectedTask.project_code }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Status:</label>
+            <span class="status-badge" [class]="'status-' + selectedTask.status.toLowerCase().replace(' ', '-')">
+              {{ selectedTask.status }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <label>Priority:</label>
+            <span class="priority-badge" [class]="'priority-' + selectedTask.priority.toLowerCase()">
+              {{ selectedTask.priority }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <label>Progress:</label>
+            <span>{{ selectedTask.progress_percentage }}%</span>
+          </div>
+
+          <div class="info-item" *ngIf="selectedTask.assigned_to_email">
+            <label>Assigned To:</label>
+            <span>{{ selectedTask.assigned_to_email }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="selectedTask.due_date">
+            <label>Due Date:</label>
+            <span>{{ formatDate(selectedTask.due_date) }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Created By:</label>
+            <span>{{ selectedTask.created_by_email }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Created At:</label>
+            <span>{{ formatDate(selectedTask.created_at) }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="selectedTask.store_type">
+            <label>Store Type:</label>
+            <span>{{ selectedTask.store_type }}</span>
+          </div>
+
+          <div class="info-item" *ngIf="selectedTask.property_type">
+            <label>Property Type:</label>
+            <span>{{ selectedTask.property_type }}</span>
+          </div>
+        </div>
+
+        <div class="description-section" *ngIf="selectedTask.description">
+          <label>Description:</label>
+          <div class="description-content">{{ selectedTask.description }}</div>
+        </div>
+
+        <div class="progress-section">
+          <label>Progress:</label>
+          <div class="progress-bar large">
+            <div class="progress-fill"
+                 [style.width.%]="selectedTask.progress_percentage">
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+          <div class="comments-header">
+            <h3>Comments & Media</h3>
+            <button class="comments-toggle" (click)="toggleCommentsSection()">
+              {{ showCommentsSection ? 'Hide Comments' : 'Show Comments' }}
+            </button>
+          </div>
+
+          <div *ngIf="showCommentsSection">
+            <!-- Comments List -->
+            <div class="comments-list" *ngIf="!loadingComments">
+              <div *ngIf="taskComments.length === 0" class="empty-state">
+                <p>No comments yet. Be the first to add a comment!</p>
+              </div>
+
+              <div *ngFor="let comment of taskComments" class="comment-item">
+                <div class="comment-header">
+                  <span class="comment-author">{{ comment.user_email }}</span>
+                  <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
+                </div>
+                <div class="comment-text">{{ comment.comment_text }}</div>
+
+                <!-- Media Files -->
+                <div class="comment-media" *ngIf="comment.media_files && comment.media_files.length > 0">
+                  <div *ngFor="let media of comment.media_files" class="media-item">
+                    <!-- Clickable Image -->
+                    <img *ngIf="isImageFile(media.file_type)"
+                         [src]="getMediaUrl(media.file_path)"
+                         [alt]="media.file_name"
+                         (click)="openMediaViewer(media)" class="clickable-media" /><!-- Click handler added -->
+                    <!-- Optional: Add CSS class for cursor -->
+                    <!-- Clickable Video Thumbnail/Placeholder -->
+                    <div *ngIf="isVideoFile(media.file_type)"
+                         (click)="openMediaViewer(media)" class="clickable-media video-placeholder">
+                      <!-- Click handler added -->
+                      <!-- Optional: Add CSS class for styling -->
+                      <video [title]="media.file_name + ' (' + formatFileSize(media.file_size) + ')'">
+                        <source [src]="getMediaUrl(media.file_path)" [type]="'video/' + media.file_type">
+                        Your browser does not support the video tag.
+                      </video>
+                      <!-- Optional: Add a play icon overlay -->
+                      <span class="play-icon">▶️</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="loadingComments" class="loading-message">
+              Loading comments...
+            </div>
+
+            <!-- Add Comment Form -->
+            <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="comment-form">
+              <div class="form-group">
+                <label for="comment_text">Add Comment</label>
+                <textarea id="comment_text"
+                          formControlName="comment_text"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Enter your comment...">
+                </textarea>
+              </div>
+
+              <div class="file-upload">
+                <label for="media_files">Upload Photos/Videos (Max 100MB each)</label>
+                <input type="file"
+                       id="media_files"
+                       (change)="onFileSelected($event)"
+                       multiple
+                       accept="image/jpeg,image/png,image/jpg,video/mp4,video/mov,video/avi"
+                       class="form-control">
+                <div class="file-info">
+                  Supported formats: JPG, PNG, MP4, MOV, AVI (Max 100MB per file)
+                </div>
+              </div>
+
+              <div style="margin-top: 16px; display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary" [disabled]="commentForm.invalid || uploadingMedia">
+                  {{ uploadingMedia ? 'Uploading...' : 'Add Comment' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button *ngIf="canEditTask(selectedTask)"
+              class="btn btn-primary"
+              (click)="editTaskFromView()">
+        Submit Task
+      </button>
+      <button class="btn btn-secondary" (click)="closeViewModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Media Viewer Modal -->
+<div *ngIf="showMediaViewer && selectedMedia" class="modal-overlay" (click)="closeMediaViewer()">
+  <div class="modal-content media-viewer" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedMedia.file_name }}</h3> <!-- Display filename -->
+      <button class="btn-close" (click)="closeMediaViewer()">×</button>
+    </div>
+    <div class="modal-body media-viewer-body">
+      <div class="media-viewer-content">
+        <!-- Full-size Image -->
+        <img *ngIf="isImageFile(selectedMedia.file_type)"
+             [src]="getMediaUrl(selectedMedia.file_path)"
+             [alt]="selectedMedia.file_name">
+
+        <!-- Full-size Video Player -->
+        <video *ngIf="isVideoFile(selectedMedia.file_type)"
+               controls
+               autoplay
+               [title]="selectedMedia.file_name">
+          <source [src]="getMediaUrl(selectedMedia.file_path)" [type]="'video/' + selectedMedia.file_type">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="media-info">{{ formatFileSize(selectedMedia.file_size) }} ({{ selectedMedia.file_type.toUpperCase() }})</span>
+      <button class="btn btn-secondary" (click)="closeMediaViewer()">Close</button>
+    </div>
+  </div>
+</div>
+<!-- Create/Edit Task Modal -->
+<div *ngIf="showTaskModal" class="modal-overlay" (click)="closeTaskModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingTask ? 'Submit Task' : 'Create New Task' }}</h2>
+      <button class="btn-close" (click)="closeTaskModal()">×</button>
+    </div>
+
+    <form [formGroup]="taskForm" (ngSubmit)="saveTask()" class="modal-body">
+
+      <!-- Hidden Fields Note -->
+      <div class="hidden-fields-note">
+        <strong>Note:</strong> Priority and Status are managed internally and not shown in this form.
+      </div>
+
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3 class="form-section-title">Basic Information</h3>
+
+
+        <div class="form-group">
+          <label for="project_id">Project *</label>
+          <select id="project_id"
+                  formControlName="project_id"
+                  class="form-control"
+                  [disabled]="!!editingTask">
+            <option value="">Select a project</option>
+            <option *ngFor="let project of projects" [value]="project.id">
+              {{ project.store_name }} - {{ project.project_code }}
+            </option>
+          </select>
+          <div *ngIf="taskForm.get('project_id')?.invalid && taskForm.get('project_id')?.touched" class="error-message">
+            Project is required
+          </div>
+        </div>
+
+        <!--
+               <div class="form-grid-2">
+          <div class="form-group">
+        <label for="assigned_to">Assign To</label>
+        <select id="assigned_to" formControlName="assigned_to" class="form-control">
+          <option value="">Unassigned</option>
+          <option *ngFor="let user of users" [value]="user.id">
+            {{ user.email }}
+          </option>
+        </select>
+      </div>
+    </div>-->
+
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input type="text"
+                 id="title"
+                 formControlName="title"
+                 class="form-control"
+                 placeholder="Enter task title">
+          <div *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched" class="error-message">
+            Title is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description"
+                    formControlName="description"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Enter task description">
+                    </textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <!-- <div class="form-group">
+        <label for="due_date">Due Date</label>
+        <input type="date"
+               id="due_date"
+               formControlName="due_date"
+               class="form-control">
+      </div>
+
+      <div class="form-group" *ngIf="editingTask">
+        <label for="progress_percentage">Progress (%)</label>
+        <input type="range"
+               id="progress_percentage"
+               formControlName="progress_percentage"
+               class="form-range"
+               min="0"
+               max="100"
+               step="5">
+        <div class="progress-value">{{ taskForm.get('progress_percentage')?.value || 0 }}%</div>
+      </div>
+       -->
+        </div>
+      </div>
+
+      <!-- Store & Property Information -->
+      <div class="form-section">
+        <h3 class="form-section-title">Store & Property Information</h3>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="store_type">Store Type</label>
+            <select id="store_type" formControlName="store_type" class="form-control">
+              <option value="">Select Store Type</option>
+              <option *ngFor="let option of storeTypeOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="property_type">Property Type</label>
+            <select id="property_type" formControlName="property_type" class="form-control">
+              <option value="">Select Property Type</option>
+              <option *ngFor="let option of propertyTypeOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- <div class="form-group">
+        <label class="checkbox-wrapper">
+          <input type="checkbox"
+                 formControlName="photo_video_capture">
+          Photo/Video Capture Required
+        </label>
+      </div>-->
+        </div>
+
+        <div class="form-group">
+          <label for="comments">Comments</label>
+          <textarea id="comments"
+                    formControlName="comments"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Additional comments or notes">
+                    </textarea>
+        </div>
+      </div>
+
+      <!-- Earth Leveling & Land Filling Activities -->
+      <div class="form-section">
+        <h3 class="form-section-title">Earth Leveling & Land Filling Activities (LL SOW)</h3>
+
+        <div class="form-group">
+
+          <div class="field-with-media">
+            <label for="earth_leveling_status">Earth Leveling Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('earth_leveling_status')"
+                    [class.has-media]="hasFieldMedia('earth_leveling_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('earth_leveling_status')" class="media-count">
+                {{getFieldMediaCount('earth_leveling_status')}}
+              </span>
+            </button>
+          </div>
+          <select id="earth_leveling_status" formControlName="earth_leveling_status" class="form-control">
+            <option value="">Select Status</option>
+            <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Foundation & Structure Statuses -->
+      <div class="form-section">
+        <h3 class="form-section-title">Foundation & Structure Activities</h3>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="footing_stone_status">Footing Stone Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('footing_stone_status')"
+                    [class.has-media]="hasFieldMedia('footing_stone_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('footing_stone_status')" class="media-count">
+                {{getFieldMediaCount('footing_stone_status')}}
+              </span>
+            </button>
+            <select id="footing_stone_status" formControlName="footing_stone_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="column_erection_status">Column Erection Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('column_erection_status')"
+                    [class.has-media]="hasFieldMedia('column_erection_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('column_erection_status')" class="media-count">
+                {{getFieldMediaCount('column_erection_status')}}
+              </span>
+            </button>
+            <select id="column_erection_status" formControlName="column_erection_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="roof_trusses_status">Roof Trusses Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('roof_trusses_status')"
+                    [class.has-media]="hasFieldMedia('roof_trusses_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('roof_trusses_status')" class="media-count">
+                {{getFieldMediaCount('roof_trusses_status')}}
+              </span>
+            </button>
+            <select id="roof_trusses_status" formControlName="roof_trusses_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="roofing_sheets_status">Roofing Sheets Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('roofing_sheets_status')"
+                    [class.has-media]="hasFieldMedia('roofing_sheets_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('roofing_sheets_status')" class="media-count">
+                {{getFieldMediaCount('roofing_sheets_status')}}
+              </span>
+            </button>
+            <select id="roofing_sheets_status" formControlName="roofing_sheets_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="roof_insulation_status">Roof Insulation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('roofing_sheets_status')"
+                    [class.has-media]="hasFieldMedia('roofing_sheets_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('roofing_sheets_status')" class="media-count">
+                {{getFieldMediaCount('roofing_sheets_status')}}
+              </span>
+            </button>
+            <select id="roof_insulation_status" formControlName="roof_insulation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+
+          <div class="form-group">
+            <label for="wall_construction_status">Wall Construction Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('wall_construction_status')"
+                    [class.has-media]="hasFieldMedia('wall_construction_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('wall_construction_status')" class="media-count">
+                {{getFieldMediaCount('wall_construction_status')}}
+              </span>
+            </button>
+            <select id="wall_construction_status" formControlName="wall_construction_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+
+
+
+          <div class="form-group">
+            <label for="sides_cladding_status">Sides Cladding Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('sides_cladding_status')"
+                    [class.has-media]="hasFieldMedia('sides_cladding_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('sides_cladding_status')" class="media-count">
+                {{getFieldMediaCount('sides_cladding_status')}}
+              </span>
+            </button>
+            <select id="sides_cladding_status" formControlName="sides_cladding_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+
+
+
+
+          <div class="form-group">
+            <label for="flooring_concrete_status">Flooring Concrete Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('flooring_concrete_status')"
+                    [class.has-media]="hasFieldMedia('flooring_concrete_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('flooring_concrete_status')" class="media-count">
+                {{getFieldMediaCount('flooring_concrete_status')}}
+              </span>
+            </button>
+            <select id="flooring_concrete_status" formControlName="flooring_concrete_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="plastering_painting_status">Plastering & Painting Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('plastering_painting_status')"
+                    [class.has-media]="hasFieldMedia('plastering_painting_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('plastering_painting_status')" class="media-count">
+                {{getFieldMediaCount('plastering_painting_status')}}
+              </span>
+            </button>
+            <select id="plastering_painting_status" formControlName="plastering_painting_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="plumbing_status">Plumbing Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('plumbing_status')"
+                    [class.has-media]="hasFieldMedia('plumbing_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('plumbing_status')" class="media-count">
+                {{getFieldMediaCount('plumbing_status')}}
+              </span>
+            </button>
+            <select id="plumbing_status" formControlName="plumbing_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Site Infrastructure & Utilities -->
+      <div class="form-section">
+        <h3 class="form-section-title">Site Infrastructure & Utilities</h3>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="parking_availability_status">Parking Availability Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('parking_availability_status')"
+                    [class.has-media]="hasFieldMedia('parking_availability_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('parking_availability_status')" class="media-count">
+                {{getFieldMediaCount('parking_availability_status')}}
+              </span>
+            </button>
+            <select id="parking_availability_status" formControlName="parking_availability_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="associates_restroom_status">Associates Restroom Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('associates_restroom_status')"
+                    [class.has-media]="hasFieldMedia('associates_restroom_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('associates_restroom_status')" class="media-count">
+                {{getFieldMediaCount('associates_restroom_status')}}
+              </span>
+            </button>
+            <select id="associates_restroom_status" formControlName="associates_restroom_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="zeptons_restroom_status">Zeptons Restroom Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('zeptons_restroom_status')"
+                    [class.has-media]="hasFieldMedia('zeptons_restroom_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('zeptons_restroom_status')" class="media-count">
+                {{getFieldMediaCount('zeptons_restroom_status')}}
+              </span>
+            </button>
+            <select id="zeptons_restroom_status" formControlName="zeptons_restroom_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="water_availability_status">Water Availability Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('water_availability_status')"
+                    [class.has-media]="hasFieldMedia('water_availability_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('water_availability_status')" class="media-count">
+                {{getFieldMediaCount('water_availability_status')}}
+              </span>
+            </button>
+            <select id="water_availability_status" formControlName="water_availability_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="parking_work_status">Parking Work Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('parking_work_status')"
+                    [class.has-media]="hasFieldMedia('parking_work_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('parking_work_status')" class="media-count">
+                {{getFieldMediaCount('parking_work_status')}}
+              </span>
+            </button>
+            <select id="parking_work_status" formControlName="parking_work_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dg_bed_status">DG Bed Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('dg_bed_status')"
+                    [class.has-media]="hasFieldMedia('dg_bed_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('dg_bed_status')" class="media-count">
+                {{getFieldMediaCount('dg_bed_status')}}
+              </span>
+            </button>
+            <select id="dg_bed_status" formControlName="dg_bed_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="store_shutters_status">Store Shutters Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('store_shutters_status')"
+                    [class.has-media]="hasFieldMedia('store_shutters_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('store_shutters_status')" class="media-count">
+                {{getFieldMediaCount('store_shutters_status')}}
+              </span>
+            </button>
+            <select id="store_shutters_status" formControlName="store_shutters_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="approach_road_status">Approach Road Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('approach_road_status')"
+                    [class.has-media]="hasFieldMedia('approach_road_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('approach_road_status')" class="media-count">
+                {{getFieldMediaCount('approach_road_status')}}
+              </span>
+            </button>
+            <select id="approach_road_status" formControlName="approach_road_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="temporary_power_kva_status">Temporary Power KVA Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('temporary_power_kva_status')"
+                    [class.has-media]="hasFieldMedia('temporary_power_kva_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('temporary_power_kva_status')" class="media-count">
+                {{getFieldMediaCount('temporary_power_kva_status')}}
+              </span>
+            </button>
+            <select id="temporary_power_kva_status" formControlName="temporary_power_kva_status" class="form-control">
+              <option value="45 KVA Available">45 KVA Available</option>
+              <option value="Power Connection Not available">Power Connection Not available</option>
+              <option value=">35 KVA Available">>35 KVA Available</option>
+              <option value="<25 KVA Available"><25 KVA Available</option>
+              <option value="<5 KVA Available"><5 KVA Available</option>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="restroom_fixtures_status">Restroom Fixtures Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('restroom_fixtures_status')"
+                    [class.has-media]="hasFieldMedia('restroom_fixtures_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('restroom_fixtures_status')" class="media-count">
+                {{getFieldMediaCount('restroom_fixtures_status')}}
+              </span>
+            </button>
+            <select id="restroom_fixtures_status" formControlName="restroom_fixtures_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dg_installation_status">DG Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('dg_installation_status')"
+                    [class.has-media]="hasFieldMedia('dg_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('dg_installation_status')" class="media-count">
+                {{getFieldMediaCount('dg_installation_status')}}
+              </span>
+            </button>
+            <select id="dg_installation_status" formControlName="dg_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="flooring_tiles_level_issues">Flooring Tiles Level Issues</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('flooring_tiles_level_issues')"
+                    [class.has-media]="hasFieldMedia('flooring_tiles_level_issues')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('flooring_tiles_level_issues')" class="media-count">
+                {{getFieldMediaCount('flooring_tiles_level_issues')}}
+              </span>
+            </button>
+            <select id="flooring_tiles_level_issues" formControlName="flooring_tiles_level_issues" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of flooringIssuesOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="permanent_power_status">Permanent Power Status (Description)</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('permanent_power_status')"
+                    [class.has-media]="hasFieldMedia('permanent_power_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('permanent_power_status')" class="media-count">
+                {{getFieldMediaCount('permanent_power_status')}}
+              </span>
+            </button>
+            <select id="permanent_power_status" formControlName="permanent_power_status" class="form-control">
+              <option value="45 KVA Available">45 KVA Available</option>
+              <option value="Power Connection Not available">Power Connection Not available</option>
+              <option value=">35 KVA Available">>35 KVA Available</option>
+              <option value="<25 KVA Available"><25 KVA Available</option>
+              <option value="<5 KVA Available"><5 KVA Available</option>
+              <option value="power applied">power applied</option>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+
+            <label for="temporary_connection_available">  Drainage Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('temporary_connection_available')"
+                    [class.has-media]="hasFieldMedia('temporary_connection_available')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('temporary_connection_available')" class="media-count">
+                {{getFieldMediaCount('temporary_connection_available')}}
+              </span>
+            </button>
+            <select id="temporary_connection_available" formControlName="temporary_connection_available" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Specific Installations -->
+      <div class="form-section">
+        <h3 class="form-section-title">Project Specific Installations (Projects SOW Checklist)</h3>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="cctv_installation_status">CCTV Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('cctv_installation_status')"
+                    [class.has-media]="hasFieldMedia('cctv_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('cctv_installation_status')" class="media-count">
+                {{getFieldMediaCount('cctv_installation_status')}}
+              </span>
+            </button>
+            <select id="cctv_installation_status" formControlName="cctv_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="lights_fans_installation_status">Lights & Fans Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('lights_fans_installation_status')"
+                    [class.has-media]="hasFieldMedia('lights_fans_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('lights_fans_installation_status')" class="media-count">
+                {{getFieldMediaCount('lights_fans_installation_status')}}
+              </span>
+            </button>
+            <select id="lights_fans_installation_status" formControlName="lights_fans_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="racks_installation_status">Racks Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('racks_installation_status')"
+                    [class.has-media]="hasFieldMedia('racks_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('racks_installation_status')" class="media-count">
+                {{getFieldMediaCount('racks_installation_status')}}
+              </span>
+            </button>
+            <select id="racks_installation_status" formControlName="racks_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cold_room_installation_status">Cold Room Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('cold_room_installation_status')"
+                    [class.has-media]="hasFieldMedia('cold_room_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('cold_room_installation_status')" class="media-count">
+                {{getFieldMediaCount('cold_room_installation_status')}}
+              </span>
+            </button>
+            <select id="cold_room_installation_status" formControlName="cold_room_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="panda_bin_installation_status">Panda Bin Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('panda_bin_installation_status')"
+                    [class.has-media]="hasFieldMedia('panda_bin_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('panda_bin_installation_status')" class="media-count">
+                {{getFieldMediaCount('panda_bin_installation_status')}}
+              </span>
+            </button>
+            <select id="panda_bin_installation_status" formControlName="panda_bin_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="crates_installation_status">Crates Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('crates_installation_status')"
+                    [class.has-media]="hasFieldMedia('crates_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('crates_installation_status')" class="media-count">
+                {{getFieldMediaCount('crates_installation_status')}}
+              </span>
+            </button>
+            <select id="crates_installation_status" formControlName="crates_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="flykiller_installation_status">Flykiller Installation Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('flykiller_installation_status')"
+                    [class.has-media]="hasFieldMedia('flykiller_installation_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('flykiller_installation_status')" class="media-count">
+                {{getFieldMediaCount('flykiller_installation_status')}}
+              </span>
+            </button>
+            <select id="flykiller_installation_status" formControlName="flykiller_installation_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dg_testing_status">DG Testing Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('dg_testing_status')"
+                    [class.has-media]="hasFieldMedia('dg_testing_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('dg_testing_status')" class="media-count">
+                {{getFieldMediaCount('dg_testing_status')}}
+              </span>
+            </button>
+            <select id="dg_testing_status" formControlName="dg_testing_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cleaning_status">Cleaning Status</label>
+            <button type="button"
+                    class="btn-media-upload"
+                    (click)="openFieldMediaModal('cleaning_status')"
+                    [class.has-media]="hasFieldMedia('cleaning_status')"
+                    *ngIf="editingTask">
+              <i class="fas fa-camera">I</i>
+              <span *ngIf="hasFieldMedia('cleaning_status')" class="media-count">
+                {{getFieldMediaCount('cleaning_status')}}
+              </span>
+            </button>
+            <select id="cleaning_status" formControlName="cleaning_status" class="form-control">
+              <option value="">Select Status</option>
+              <option *ngFor="let option of taskActivityOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid || saving">
+          {{ saving ? 'Saving...' : (editingTask ? 'Submit Task' : 'Create Task') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Field Media Upload Modal -->
+<div *ngIf="showFieldMediaModal" class="modal-overlay" (click)="closeFieldMediaModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add Media for {{ fieldDisplayNames[currentFieldForUpload] }}</h3>
+      <button class="btn-close" (click)="closeFieldMediaModal()">×</button>
+    </div>
+
+    <form [formGroup]="fieldMediaForm" (ngSubmit)="addFieldMedia()" class="modal-body">
+      <div class="form-group">
+        <label for="field_comment">Comment (Optional)</label>
+        <textarea id="field_comment"
+                  formControlName="comment_text"
+                  class="form-control"
+                  placeholder="Add a comment about this media..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="field_media">Select Photos/Videos</label>
+        <input type="file"
+               id="field_media"
+               (change)="onFieldFileSelected($event)"
+               multiple
+               accept="image/*,video/*"
+               class="form-control">
+      </div>
+
+      <!-- Show existing field media if any -->
+      <div *ngIf="fieldMediaComments[currentFieldForUpload]?.length" class="existing-media">
+        <h4>Existing Media:</h4>
+        <div class="media-grid">
+          <div *ngFor="let comment of fieldMediaComments[currentFieldForUpload]" class="media-item">
+            <div class="comment-info">
+              <small>{{ comment.created_at | date }}</small>
+              <p>{{ comment.comment_text.split('/')[1] }}</p>
+            </div>
+            <div class="media-files">
+              <div *ngFor="let media of comment.media_files" class="media-file">
+                <img *ngIf="isImageFile(media.file_type)"
+                     [src]="getMediaUrl(media.file_path)"
+                     (click)="openMediaViewer(media)"
+                     class="thumbnail">
+                <video *ngIf="isVideoFile(media.file_type)"
+                       (click)="openMediaViewer(media)"
+                       class="thumbnail">
+                  <source [src]="getMediaUrl(media.file_path)">
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeFieldMediaModal()">Cancel</button>
+      <button type="button" class="btn btn-primary"
+              (click)="addFieldMedia()"
+              [disabled]="uploadingFieldMedia">
+        {{ uploadingFieldMedia ? 'Uploading...' : 'Add Media' }}
+      </button>
+    </div>
+  </div>
+</div>

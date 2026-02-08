@@ -1,0 +1,167 @@
+<!-- comments.component.html - Fixed Version -->
+<div class="comments-container">
+  <div class="header">
+    <h2 class="title">
+      <i class="fas fa-comments"></i>
+      All Comments
+    </h2>
+    <div class="stats">
+      <span class="badge">{{ comments.length }} Total Comments</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading comments...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadAllComments()">Try Again</button>
+  </div>
+
+  <!-- Comments List -->
+  <div *ngIf="!loading && !error" class="comments-list">
+    <div *ngIf="comments.length === 0" class="empty-state">
+      <i class="fas fa-comment-slash"></i>
+      <h3>No Comments Found</h3>
+      <p>No comments have been posted yet.</p>
+    </div>
+
+    <div *ngFor="let comment of comments" class="comment-card">
+      <!-- Comment Header -->
+      <div class="comment-header">
+        <div class="user-info">
+          <div class="avatar">
+            {{ getUserEmail(comment).charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-details">
+            <h4>{{ getUserEmail(comment) }}</h4>
+            <span class="role-badge" [class]="getRoleClass(getUserRole(comment))">
+              {{ getUserRole(comment) }}
+            </span>
+          </div>
+        </div>
+        <div class="timestamp">
+          <i class="fas fa-clock"></i>
+          {{ formatDate(comment.created_at) }}
+        </div>
+      </div>
+
+      <!-- Project & Task Info -->
+      <div class="context-info">
+        <div class="project-info">
+          <i class="fas fa-folder"></i>
+          <div>
+            <strong>Project:</strong> {{ getProjectCode(comment) }} - {{ getStoreName(comment) }}
+            <br>
+            <small *ngIf="getProjectLocation(comment)">{{ getProjectLocation(comment) }}</small>
+          </div>
+        </div>
+        <div class="task-info">
+          <i class="fas fa-tasks"></i>
+          <div>
+            <strong>Task:</strong> {{ getTaskTitle(comment) }}
+            <br>
+            <small>Status: <span class="status-badge" [class]="getStatusClass(getTaskStatus(comment))">{{ getTaskStatus(comment) }}</span></small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comment Content -->
+      <div class="comment-content">
+        <p>{{ comment.comment_text }}</p>
+      </div>
+
+      <!-- Media Files -->
+      <div *ngIf="comment.media_files && comment.media_files.length > 0" class="media-section">
+        <h5><i class="fas fa-paperclip"></i> Attachments ({{ comment.media_files.length }})</h5>
+        <div class="media-grid">
+          <div *ngFor="let media of comment.media_files" class="media-item" (click)="openMediaModal(media)">
+            <!-- Image Preview -->
+            <div *ngIf="isImage(media.file_type)" class="media-preview image-preview">
+              <img [src]="getMediaUrl(media.file_path)" [alt]="media.file_name"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="media-placeholder" style="display: none;">
+                <i class="fas fa-image"></i>
+                <span>Image not available</span>
+              </div>
+              <div class="media-overlay">
+                <i class="fas fa-search-plus"></i>
+              </div>
+            </div>
+
+            <!-- Video Preview -->
+            <div *ngIf="isVideo(media.file_type)" class="media-preview video-preview">
+              <video [src]="getMediaUrl(media.file_path)" preload="metadata"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"></video>
+              <div class="media-placeholder" style="display: none;">
+                <i class="fas fa-video"></i>
+                <span>Video not available</span>
+              </div>
+              <div class="media-overlay">
+                <i class="fas fa-play"></i>
+              </div>
+            </div>
+
+            <!-- Other File Types -->
+            <div *ngIf="!isImage(media.file_type) && !isVideo(media.file_type)" class="media-preview file-preview">
+              <div class="file-icon">
+                <i class="fas fa-file"></i>
+              </div>
+              <div class="media-overlay">
+                <i class="fas fa-download"></i>
+              </div>
+            </div>
+
+            <!-- File Info -->
+            <div class="media-info">
+              <span class="file-name" [title]="media.file_name">{{ media.file_name }}</span>
+              <span class="file-size">{{ getFileSize(media.file_size) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Media Modal -->
+<div *ngIf="showMediaModal && selectedMedia" class="modal-overlay" (click)="closeMediaModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h4>{{ selectedMedia.file_name }}</h4>
+      <button class="close-btn" (click)="closeMediaModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Large Image View -->
+      <img *ngIf="selectedMedia && isImage(selectedMedia.file_type)"
+           [src]="getMediaUrl(selectedMedia.file_path)"
+           [alt]="selectedMedia.file_name"
+           class="modal-image"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+      <!-- Video Player -->
+      <video *ngIf="selectedMedia && isVideo(selectedMedia.file_type)"
+             [src]="getMediaUrl(selectedMedia.file_path)"
+             controls
+             class="modal-video"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      </video>
+
+      <!-- Error Message for Failed Media -->
+      <div class="media-error" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Media file could not be loaded</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span>{{ getFileSize(selectedMedia?.file_size || 0) }}</span>
+    </div>
+  </div>
+</div>

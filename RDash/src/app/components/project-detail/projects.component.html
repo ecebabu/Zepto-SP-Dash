@@ -1,0 +1,2221 @@
+<!-- projects.component.html - Complete Version -->
+<div class="projects-container">
+  <!-- Header Section -->
+  <div class="projects-header">
+    <div class="header-left">
+      <h1>Project Management System</h1>
+      <p>Manage projects and users with role-based access</p>
+    </div>
+    <div class="header-right">
+      <!-- ✅ Add CSV Download Button -->
+      <button class="btn-primary btn-state-city-manager" (click)="toggleStateCityEditor()" title="State City MS">
+        State City MS
+      </button>
+      <button class="btn-primary" (click)="downloadProjectsAsCSV()" title="Download projects as CSV">
+        📥 Download CSV
+      </button>
+      <button class="btn-primary" (click)="showCreateForm = true" *ngIf="canAdd() && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
+        <i class="icon">+</i>
+        Add Project
+      </button>
+      <button class="btn-secondary" (click)="resetForm()" *ngIf="showCreateForm">
+        <i class="icon">←</i>
+        Back to Projects
+      </button>
+      <button class="btn-secondary" (click)="resetEditForm()" *ngIf="showEditForm">
+        <i class="icon">←</i>
+        Cancel Edit
+      </button>
+      <button class="btn-secondary" (click)="resetUserForm()" *ngIf="showUserForm">
+        <i class="icon">←</i>
+        Back to Projects
+      </button>
+    </div>
+  </div>
+
+  <!-- Status Cards Section -->
+  <div class="status-cards" *ngIf="projectStatusCounts && !showCreateForm && !showEditForm && !showUserForm && !showViewProject">
+    <!-- All Projects -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>All Projects</h3>
+        <span class="count">{{ projectStatusCounts.all_projects }}</span>
+      </div>
+    </div>
+
+    <!-- LOI Signed (YES only) -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>LOI Signed</h3>
+        <span class="count">{{ projectStatusCounts.loi_signed_yes }}</span>
+      </div>
+    </div>
+    <!-- Token Released (Yes) -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>Token Released</h3>
+        <span class="count">{{ projectStatusCounts.token_released_yes }}</span>
+      </div>
+    </div>
+    <!-- LL WIP -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>LL WIP</h3>
+        <span class="count ll-wip">{{ projectStatusCounts.ll_wip }}</span>
+      </div>
+    </div>
+
+    <!-- LL HO DONE -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>LL HO DONE</h3>
+        <span class="count">{{ projectStatusCounts.llho_done }}</span>
+      </div>
+    </div>
+    <!-- Recce Completed -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>Recce Completed</h3>
+        <span class="count">{{ projectStatusCounts.recce_completed }}</span>
+      </div>
+    </div>
+    <!-- Fitout WIP -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>Fitout WIP</h3>
+        <span class="count fitout-wip">{{ projectStatusCounts.fitout_wip }}</span>
+      </div>
+    </div>
+
+    <!-- Project HO Complete -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>Project HO Complete</h3>
+        <span class="count">{{ projectStatusCounts.project_ho_complete }}</span>
+      </div>
+    </div>
+
+    <!-- Launched -->
+    <div class="status-card">
+      <div class="card-header">
+        <h3>Launched</h3>
+        <span class="count">{{ projectStatusCounts.launched }}</span>
+      </div>
+    </div>
+
+
+
+
+    <!-- Site Type Breakdown - Clickable -->
+    <div class="status-card site-type-card" style="width:800px;height:120px;">
+      <div class="site-type-grid">
+        <!-- Site Type Label Item -->
+        <div class="site-type-item site-type-header">
+          <span class="label">Site Type</span>
+        </div>
+        <!-- BTS -->
+        <div class="site-type-item clickable" (click)="filterBySiteType('BTS')">
+          <span class="label">BTS</span>
+          <span class="count">{{ projectStatusCounts.site_type_bts }}</span>
+        </div>
+        <!-- Semi BTS -->
+        <div class="site-type-item clickable" (click)="filterBySiteType('Semi BTS')">
+          <span class="label">Semi BTS</span>
+          <span class="count">{{ projectStatusCounts.site_type_semi_bts }}</span>
+        </div>
+        <!-- RTM -->
+        <div class="site-type-item clickable" (click)="filterBySiteType('RTM')">
+          <span class="label">RTM</span>
+          <span class="count">{{ projectStatusCounts.site_type_rtm }}</span>
+        </div>
+        <!-- C & E -->
+        <div class="site-type-item clickable" (click)="filterBySiteType('C&E')">
+          <span class="label">C & E</span>
+          <span class="count">{{ projectStatusCounts.site_type_c_and_e }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Project Form -->
+  <div class="create-project-section" *ngIf="showCreateForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Create New Project</h2>
+        <p>Fill in the project details below</p>
+      </div>
+
+      <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="project-form">
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="store_code">Store Code *</label>
+              <input type="text"
+                     id="store_code"
+                     formControlName="store_code"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('store_code')"
+                     placeholder="Enter store code">
+              <div class="error-message" *ngIf="isFieldInvalid('store_code')">
+                Store code is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="store_name">Store Name *</label>
+              <input type="text"
+                     id="store_name"
+                     formControlName="store_name"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('store_name')"
+                     placeholder="Enter store name">
+              <div class="error-message" *ngIf="isFieldInvalid('store_name')">
+                Store name is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="project_code">Project Code *</label>
+              <input type="text"
+                     id="project_code"
+                     formControlName="project_code"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('project_code')"
+                     placeholder="Enter project code">
+              <div class="error-message" *ngIf="isFieldInvalid('project_code')">
+                Project code is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="criticality">Criticality</label>
+              <select id="criticality" formControlName="criticality" class="form-control">
+
+                <option value="P0">P0</option>
+                <option value="P1">P1</option>
+                <option value="P2">P2</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="form-section">
+          <h3>Location Details</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_zone">Zone <span class="text-danger"> *</span></label>
+              <select id="edit_zone" formControlName="zone" class="form-control">
+
+                <option value="CENTRAL">CENTRAL</option>
+                <option value="WEST">WEST</option>
+                <option value="EAST">EAST</option>
+                <option value="NORTH">NORTH</option>
+                <option value="SOUTH">SOUTH</option>
+              </select>
+            </div>
+
+            <!-- State Dropdown -->
+            <div class="form-group">
+              <label for="state">State <span class="text-danger">*</span></label>
+              <select id="state"
+                      formControlName="state"
+                      class="form-control"
+                      (change)="onStateChange($event)"
+                      [class.is-invalid]="isFieldInvalid('state')">
+                <option value="">Select State</option>
+                <option *ngFor="let state of statesList" [value]="state.name">{{ state.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('state')">
+                Please select a state.
+              </div>
+            </div>
+
+            <!-- City Dropdown -->
+            <div class="form-group">
+              <label for="city">City <span class="text-danger">*</span></label>
+              <select id="city"
+                      formControlName="city"
+                      class="form-control"
+                      [disabled]="!selectedState || filteredCitiesList.length === 0"
+                      [class.is-invalid]="isFieldInvalid('city')">
+                <option value="">Select City</option>
+                <option *ngFor="let city of filteredCitiesList" [value]="city.name">{{ city.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('city')">
+                Please select a city.
+              </div>
+              <small class="form-text text-muted" *ngIf="!selectedState">
+                Please select a state first to see available cities.
+              </small>
+              <small class="form-text text-muted" *ngIf="selectedState && filteredCitiesList.length === 0">
+                No cities available for selected state.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="site_lat_long">Site Lat/Long</label>
+              <input type="text"
+                     id="site_lat_long"
+                     formControlName="site_lat_long"
+                     class="form-control"
+                     placeholder="Enter coordinates">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="address">Address</label>
+              <textarea id="address" formControlName="address" class="form-control" placeholder="Enter full address" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Site Information -->
+        <div class="form-section">
+          <h3>Site Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="store_type">Store Type <span class="text-danger"> *</span></label>
+              <select id="store_type" formControlName="store_type" class="form-control">
+                <option value="">Select store type</option>
+                <option value="Dark Store">Dark Store</option>
+                <option value="Super Store">Super Store</option>
+                <option value="Cafe">Cafe</option>
+                <option value="Relocation">Relocation</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="site_type">Site Type<span class="text-danger"> *</span></label>
+              <select id="site_type" formControlName="site_type" class="form-control">
+                <option value="">Select site type</option>
+                <option value="BTS">BTS</option>
+                <option value="Semi BTS">Semi BTS</option>
+                <option value="RTM">RTM</option>
+                <option value="C&E">C&E</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="project_status">Project Status</label>
+              <select id="project_status" formControlName="project_status" class="form-control">
+                <option value="LL WIP">LL WIP</option>
+                <option value="Fitout WIP">Fitout WIP</option>
+                <option value="LLHO DONE">LLHO DONE</option>
+                <option value="Project HO Complete">Project HO Complete</option>
+                <option value="LAUNCHED">LAUNCHED</option>
+                <option value="Preinwarding">Preinwarding</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="property_area_sqft">Property Area (Sqft)</label>
+              <input type="number"
+                     id="property_area_sqft"
+                     formControlName="property_area_sqft"
+                     class="form-control"
+                     placeholder="Enter area in sqft">
+            </div>
+
+            <div class="form-group">
+              <label for="actual_carpet_area_sqft">Actual Carpet Area as per Recee (sqft)</label>
+              <input type="number"
+                     id="actual_carpet_area_sqft"
+                     formControlName="actual_carpet_area_sqft"
+                     class="form-control"
+                     placeholder="Enter carpet area in sqft">
+            </div>
+          </div>
+        </div>
+
+        <!-- Important Dates -->
+        <div class="form-section">
+          <h3>Important Dates</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="ll_ho_date">LL HO Date</label>
+              <input type="date"
+                     id="ll_ho_date"
+                     formControlName="ll_ho_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="launch_date">Launch Date</label>
+              <input type="date"
+                     id="launch_date"
+                     formControlName="launch_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="project_handover_date">Project Handover Date</label>
+              <input type="date"
+                     id="project_handover_date"
+                     formControlName="project_handover_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="loi_release_date">LOI Release Date</label>
+              <input type="date"
+                     id="loi_release_date"
+                     formControlName="loi_release_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="token_release_date">Token Release Date</label>
+              <input type="date"
+                     id="token_release_date"
+                     formControlName="token_release_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="recee_date">Recee Date</label>
+              <input type="date"
+                     id="recee_date"
+                     formControlName="recee_date"
+                     class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Information -->
+        <div class="form-section">
+          <h3>Status Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="recee_status">Recee Status</label>
+              <select id="recee_status" formControlName="recee_status" class="form-control">
+
+                <option value="Completed">Completed</option>
+                <option value="WIP">WIP</option>
+                <option value="Not Started">Not Started</option>
+                <option value="NA">NA</option>
+
+                <!-- Add other known statuses from your Excel here -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="loi_signed_status">LOI Signed</label>
+              <select id="loi_signed_status" formControlName="loi_signed_status" class="form-control">
+
+                <option value="YES">Yes</option>
+                <option value="No">No</option>
+                <!-- Add other known statuses from your Excel here -->
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="layout">Layout</label>
+              <!-- <textarea id="layout"
+              formControlName="layout"
+              class="form-control"
+              placeholder="Enter layout details"
+              rows="3"></textarea>-->
+              <select id="layout" formControlName="layout" class="form-control">
+
+                <option value="Completed">Completed</option>
+                <option value="WIP">WIP</option>
+                <option value="Not Started">Not Started</option>
+                <option value="NA">NA</option>
+
+                <!-- Add other known statuses from your Excel here -->
+              </select>
+            </div>
+
+
+
+            <!-- Token Released -->
+            <div class="form-group">
+              <label for="token_released">Token Released</label>
+              <select id="token_released"
+                      formControlName="token_released"
+                      class="form-control">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <!-- Power Availability -->
+            <div class="form-group">
+              <label for="power_availability_kva">Power Availability (kVA)</label>
+              <select id="power_availability_kva"
+                      formControlName="power_availability_kva"
+                      class="form-control">
+                <option value="">Select</option>
+                <option value="45 KVA Available">45 KVA Available</option>
+                <option value="Power Connection Not available">Power Connection Not available</option>
+                <option value=">35 KVA Available">>35 KVA Available</option>
+                <option value="<25 KVA Available"><25 KVA Available</option>
+                <option value="<5 KVA Available"><5 KVA Available</option>
+              </select>
+            </div>
+
+
+          </div>
+        </div>
+
+        <!-- Assigned Users -->
+        <div class="form-section">
+          <h3>Assigned Users</h3>
+          <div class="dynamic-section">
+            <div class="dynamic-header">
+              <button type="button" class="btn-add" (click)="addUser()">
+                <i class="icon">+</i>
+                Add User
+              </button>
+            </div>
+            <div class="dynamic-items" formArrayName="assigned_users">
+              <div class="dynamic-item" *ngFor="let user of assignedUsersArray.controls; let i = index" [formGroupName]="i">
+                <div class="dynamic-item-content">
+                  <div class="form-group">
+                    <label>User</label>
+                    <select formControlName="user_id" class="form-control">
+                      <option value="">Select user</option>
+                      <option *ngFor="let user of availableUsers" [value]="user.id">{{ user.email }}</option>
+                    </select>
+                  </div>
+                  <!-- User Role (Hardcoded as Normal User) -->
+                  <!-- User Role (Hardcoded as Normal User) -->
+                  <div class="form-group">
+                    <label>Role</label>
+                    <!-- Hidden input to submit value -->
+                    <input type="hidden" formControlName="role" value="Normal User">
+                    <!-- Display-only field -->
+                    <div class="form-control readonly">Normal User</div>
+                  </div>
+                  <button type="button" class="btn-remove" (click)="removeUser(i)">
+                    <i class="icon">×</i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="form-section">
+          <h3>Documents</h3>
+
+          <!-- Document Upload -->
+          <div class="form-group">
+            <label for="document-upload">Upload Document</label>
+            <input type="file"
+                   id="document-upload"
+                   (change)="onDocumentFileSelected($event)"
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
+                   class="form-control"
+                   [disabled]="uploadingDocument">
+            <small class="form-text text-muted">
+              Allowed types: PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, JPEG, PNG (Max 10MB)
+            </small>
+          </div>
+
+          <!-- Upload Progress -->
+          <div *ngIf="uploadingDocument" class="upload-progress">
+            <div class="progress-bar">
+              <div class="progress-fill"></div>
+            </div>
+            <span>Uploading documents...</span>
+          </div>
+
+          <!-- Upload Error -->
+          <div *ngIf="uploadError" class="error-message">
+            {{ uploadError }}
+          </div>
+
+          <!-- Pending Documents (before project creation) -->
+          <div *ngIf="pendingDocuments.length > 0" class="pending-documents">
+            <h5>Documents to Upload:</h5>
+            <div class="document-list">
+              <div *ngFor="let file of pendingDocuments; let i = index" class="document-item pending">
+                <div class="document-info">
+                  <span class="file-icon">{{ getFileTypeIcon(file.name) }}</span>
+                  <div class="file-details">
+                    <span class="file-name">{{ file.name }}</span>
+                    <span class="file-size">{{ getFileSize(file.size) }}</span>
+                  </div>
+                </div>
+                <button type="button"
+                        class="btn-remove"
+                        (click)="removePendingDocument(i)"
+                        title="Remove file">
+                  ×
+                </button>
+              </div>
+            </div>
+            <small class="form-text text-info">
+              These files will be uploaded after the project is created.
+            </small>
+          </div>
+
+          <!-- Uploaded Documents (after project creation) -->
+          <div *ngIf="projectDocuments.length > 0" class="uploaded-documents">
+            <h5>Uploaded Documents:</h5>
+            <div class="document-list">
+              <div *ngFor="let doc of projectDocuments" class="document-item uploaded">
+                <div class="document-info">
+                  <span class="file-icon">{{ getFileTypeIcon(doc.document_name) }}</span>
+                  <div class="file-details">
+                    <span class="file-name">{{ doc.document_name }}</span>
+                    <span class="file-date">{{ formatDateTime(doc.created_at) }}</span>
+                  </div>
+                </div>
+                <div class="document-actions">
+                  <button type="button"
+                          class="btn-download"
+                          (click)="downloadDocument(doc)"
+                          title="Download">
+                    ⬇
+                  </button>
+                  <button type="button"
+                          class="btn-remove"
+                          (click)="deleteDocument(doc)"
+                          title="Delete"
+                          *ngIf="canDelete()">
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="resetForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="projectForm.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">Create Project</span>
+            <span *ngIf="isSubmitting" class="loading-spinner">
+              <div class="spinner"></div>
+              Creating...
+            </span>
+          </button>
+        </div>
+
+        <div class="error-message" *ngIf="submitError">
+          {{ submitError }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Project Form -->
+  <div class="create-project-section" *ngIf="showEditForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Edit Project</h2>
+        <p>Update project information</p>
+      </div>
+
+      <form [formGroup]="editProjectForm" (ngSubmit)="updateProject()" class="project-form">
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_store_code">Store Code *</label>
+              <input type="text"
+                     id="edit_store_code"
+                     formControlName="store_code"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('store_code', editProjectForm)"
+                     placeholder="Enter store code">
+              <div class="error-message" *ngIf="isFieldInvalid('store_code', editProjectForm)">
+                Store code is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_store_name">Store Name *</label>
+              <input type="text"
+                     id="edit_store_name"
+                     formControlName="store_name"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('store_name', editProjectForm)"
+                     placeholder="Enter store name">
+              <div class="error-message" *ngIf="isFieldInvalid('store_name', editProjectForm)">
+                Store name is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_project_code">Project Code *</label>
+              <input type="text"
+                     id="edit_project_code"
+                     formControlName="project_code"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('project_code', editProjectForm)"
+                     placeholder="Enter project code">
+              <div class="error-message" *ngIf="isFieldInvalid('project_code', editProjectForm)">
+                Project code is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_criticality">Criticality</label>
+              <select id="edit_criticality" formControlName="criticality" class="form-control">
+                <option value="">Select Criticality</option>
+                <option value="P0">P0</option>
+                <option value="P1">P1</option>
+                <option value="P2">P2</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="form-section">
+          <h3>Location Details</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_zone">Zone</label>
+              <input type="text"
+                     id="edit_zone"
+                     formControlName="zone"
+                     class="form-control"
+                     placeholder="Enter zone">
+            </div>
+
+
+            <div class="form-group" *ngIf="showEditForm">
+              <label for="editState">State <span class="text-danger">*</span></label>
+              <select id="editState"
+                      formControlName="state"
+                      class="form-control"
+                      (change)="onEditStateChange($event)"
+                      [class.is-invalid]="isFieldInvalid('state', editProjectForm)">
+                <option value="">Select State</option>
+                <option *ngFor="let state of statesList" [value]="state.name">{{ state.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('state', editProjectForm)">
+                Please select a state.
+              </div>
+            </div>
+
+
+            <div class="form-group" *ngIf="showEditForm">
+              <label for="editCity">City <span class="text-danger">*</span></label>
+              <select id="editCity"
+                      formControlName="city"
+                      class="form-control"
+                      [disabled]="!selectedState || filteredCitiesList.length === 0"
+                      [class.is-invalid]="isFieldInvalid('city', editProjectForm)">
+                <option value="">Select City</option>
+                <option *ngFor="let city of filteredCitiesList" [value]="city.name">{{ city.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('city', editProjectForm)">
+                Please select a city.
+              </div>
+              <small class="form-text text-muted" *ngIf="!selectedState">
+                Please select a state first to see available cities.
+              </small>
+              <small class="form-text text-muted" *ngIf="selectedState && filteredCitiesList.length === 0">
+                No cities available for selected state.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_site_lat_long">Site Lat/Long</label>
+              <input type="text"
+                     id="edit_site_lat_long"
+                     formControlName="site_lat_long"
+                     class="form-control"
+                     placeholder="Enter coordinates">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="edit_address">Address</label>
+              <textarea id="edit_address" formControlName="address" class="form-control" placeholder="Enter full address" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Site Information -->
+        <div class="form-section">
+          <h3>Site Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_store_type">Store Type</label>
+              <select id="edit_store_type" formControlName="store_type" class="form-control">
+                <option value="">Select store type</option>
+                <option value="Dark Store">Dark Store</option>
+                <option value="Super Store">Super Store</option>
+                <option value="Cafe">Cafe</option>
+                <option value="Relocation">Relocation</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_site_type">Site Type</label>
+              <select id="edit_site_type" formControlName="site_type" class="form-control">
+                <option value="">Select site type</option>
+                <option value="BTS">BTS</option>
+                <option value="Semi BTS">Semi BTS</option>
+                <option value="RTM">RTM</option>
+                <option value="C&E">C&E</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_project_status">Project Status</label>
+              <select id="edit_project_status" formControlName="project_status" class="form-control">
+                <option value="LL WIP">LL WIP</option>
+                <option value="Fitout WIP">Fitout WIP</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit_property_area_sqft">Property Area (Sqft)</label>
+              <input type="number"
+                     id="edit_property_area_sqft"
+                     formControlName="property_area_sqft"
+                     class="form-control"
+                     placeholder="Enter area in sqft">
+            </div>
+          </div>
+        </div>
+
+        <!-- Important Dates -->
+        <div class="form-section">
+          <h3>Important Dates</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_ll_ho_date">LL HO Date</label>
+              <input type="date"
+                     id="edit_ll_ho_date"
+                     formControlName="ll_ho_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_launch_date">Launch Date</label>
+              <input type="date"
+                     id="edit_launch_date"
+                     formControlName="launch_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_project_handover_date">Project Handover Date</label>
+              <input type="date"
+                     id="edit_project_handover_date"
+                     formControlName="project_handover_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_loi_release_date">LOI Release Date</label>
+              <input type="date"
+                     id="edit_loi_release_date"
+                     formControlName="loi_release_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_token_release_date">Token Release Date</label>
+              <input type="date"
+                     id="edit_token_release_date"
+                     formControlName="token_release_date"
+                     class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_recee_date">Recee Date</label>
+              <input type="date"
+                     id="edit_recee_date"
+                     formControlName="recee_date"
+                     class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Information -->
+        <div class="form-section">
+          <h3>Status Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="edit_recee_status">Recee Status</label>
+              <input type="text"
+                     id="edit_recee_status"
+                     formControlName="recee_status"
+                     class="form-control"
+                     placeholder="Enter recee status">
+            </div>
+
+            <div class="form-group">
+              <label for="edit_loi_signed_status">LOI Signed Status</label>
+
+              <select id="edit_loi_signed_status" formControlName="loi_signed_status" class="form-control">
+
+                <option value="YES">Yes</option>
+                <option value="No">No</option>
+                <!-- Add other known statuses from your<input type="text"
+                      id="edit_loi_signed_status"
+                      formControlName="loi_signed_status"
+                      class="form-control"
+                      placeholder="Enter LOI signed status">
+                Excel here -->
+              </select>
+            </div>
+
+            <!-- Actual Carpet Area -->
+            <div class="form-group">
+              <label for="edit_actual_carpet_area_sqft">Actual Carpet Area as per Recee (sqft)</label>
+              <input type="number"
+                     id="edit_actual_carpet_area_sqft"
+                     formControlName="actual_carpet_area_sqft"
+                     class="form-control"
+                     placeholder="Enter carpet area in sqft">
+            </div>
+
+            <!-- Token Released -->
+            <div class="form-group">
+              <label for="edit_token_released">Token Released</label>
+              <select id="edit_token_released"
+                      formControlName="token_released"
+                      class="form-control">
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <!-- Power Availability -->
+            <div class="form-group">
+              <label for="edit_power_availability_kva">Power Availability (kVA)</label>
+              <select id="edit_power_availability_kva"
+                      formControlName="power_availability_kva"
+                      class="form-control">
+                <option value="">Select</option>
+                <option value="45 KVA Available">45 KVA Available</option>
+                <option value="Power Connection Not available">Power Connection Not available</option>
+                <option value=">35 KVA Available">>35 KVA Available</option>
+                <option value="<25 KVA Available"><25 KVA Available</option>
+                <option value="<5 KVA Available"><5 KVA Available</option>
+              </select>
+            </div>
+
+
+            <div class="form-group full-width">
+              <label for="edit_layout">Layout</label>
+              <!-- <textarea id="edit_layout"
+              formControlName="layout"
+              class="form-control"
+              placeholder="Enter layout details"
+              rows="3"></textarea>-->
+              <select id="edit_layout" formControlName="layout" class="form-control">
+
+                <option value="Completed">Completed</option>
+                <option value="WIP">WIP</option>
+                <option value="Not Started">Not Started</option>
+                <option value="NA">NA</option>
+
+                <!-- Add other known statuses from your Excel here -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assigned Users for Edit -->
+        <!-- Assigned Users for Edit -->
+        <!-- FIXED: Assigned Users for Edit Form -->
+        <div class="form-section">
+          <h3>Assigned Users</h3>
+          <div class="dynamic-section">
+            <div class="dynamic-header">
+              <button type="button" class="btn-add" (click)="addUserToEdit()">
+                <i class="icon">+</i>
+                Add User
+              </button>
+            </div>
+            <div class="dynamic-items" formArrayName="assigned_users">
+              <div class="dynamic-item" *ngFor="let user of editAssignedUsersArray.controls; let i = index" [formGroupName]="i">
+                <div class="dynamic-item-content">
+                  <div class="form-group">
+                    <label>User</label>
+                    <select formControlName="user_id" class="form-control">
+                      <option value="">Select user</option>
+                      <option *ngFor="let availableUser of availableUsers"
+                              [value]="availableUser.id"
+                              [selected]="user.get('user_id')?.value == availableUser.id">
+                        {{ availableUser.email }}
+                      </option>
+                    </select>
+                    <!-- DEBUG: Show current value -->
+                    <small class="text-muted" *ngIf="user.get('user_id')?.value">
+                      Current: {{ user.get('user_id')?.value }}
+                    </small>
+                  </div>
+                  <div class="form-group">
+                    <label>Role</label>
+                    <!-- FIXED: Proper role handling -->
+                    <input type="hidden" formControlName="role" value="Normal User">
+                    <div class="form-control readonly">Normal User</div>
+                  </div>
+                  <button type="button" class="btn-remove" (click)="removeUserFromEdit(i)">
+                    <i class="icon">×</i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEBUG SECTION: Show current form state -->
+          <!--<div class="debug-section" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+            <small><strong>Debug Info:</strong></small><br>
+            <small>Assigned Users Array Length: {{ editAssignedUsersArray.length }}</small><br>
+            <small>Available Users Count: {{ availableUsers.length }}</small><br>
+            <small>Form Array Values: {{ editAssignedUsersArray.value | json }}</small>
+          </div>-->
+        </div>
+        <!-- Documents for Edit -->
+        <!-- Document Upload Section -->
+        <div class="form-group">
+          <label>Upload Document</label>
+          <input type="file" (change)="onDocumentFileSelected($event)" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" />
+        </div>
+
+        <!-- List Uploaded Documents -->
+        <div *ngIf="documentsArray.length > 0" class="document-list">
+          <h5>Uploaded Documents</h5>
+          <ul>
+            <li *ngFor="let doc of documentsArray.controls; let i = index">
+              <a [href]="doc.get('file_path')?.value" target="_blank" class="document-link">
+                {{ doc.get('document_name')?.value }}
+              </a>
+              <button type="button" (click)="removeDocument(i)" class="btn-remove">❌ Remove</button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="resetEditForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="editProjectForm.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">Update Project</span>
+            <span *ngIf="isSubmitting" class="loading-spinner">
+              <div class="spinner"></div>
+              Updating...
+            </span>
+          </button>
+        </div>
+
+        <div class="error-message" *ngIf="submitError">
+          {{ submitError }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Management Form -->
+  <div class="create-project-section" *ngIf="showUserForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>{{ selectedUser ? 'Edit User' : 'Create New User' }}</h2>
+        <p>{{ selectedUser ? 'Update user information' : 'Add a new user to the system' }}</p>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="project-form">
+        <div class="form-section">
+          <h3>User Information</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="user_email">Email *</label>
+              <input type="email"
+                     id="user_email"
+                     formControlName="email"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('email', userForm)"
+                     placeholder="Enter user email">
+              <div class="error-message" *ngIf="isFieldInvalid('email', userForm)">
+                Valid email is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="user_password">Password {{ selectedUser ? '' : '*' }}</label>
+              <input type="password"
+                     id="user_password"
+                     formControlName="password"
+                     class="form-control"
+                     [class.error]="isFieldInvalid('password', userForm)"
+                     [placeholder]="selectedUser ? 'Leave blank to keep current password' : 'Enter password'">
+              <div class="error-message" *ngIf="isFieldInvalid('password', userForm)">
+                Password is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="user_role">Role *</label>
+              <select id="user_role" formControlName="role" class="form-control">
+                <option value="Normal User">Normal User</option>
+                <option value="Admin">Admin</option>
+                <option value="Super Admin">Super Admin</option>
+                <option value="Editor">Editor</option>
+                <option value="Associate">Associate</option>
+                <option value="Ground Team">Ground Team</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="resetUserForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-submit" [disabled]="userForm.invalid || isSubmitting">
+            <span *ngIf="!isSubmitting">{{ selectedUser ? 'Update User' : 'Create User' }}</span>
+            <span *ngIf="isSubmitting" class="loading-spinner">
+              <div class="spinner"></div>
+              {{ selectedUser ? 'Updating...' : 'Creating...' }}
+            </span>
+          </button>
+        </div>
+
+        <div class="error-message" *ngIf="submitError">
+          {{ submitError }}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Projects List Section -->
+  <div class="projects-list-section" *ngIf="!showCreateForm && !showEditForm && !showUserForm && !showViewProject">
+    <!-- Search and Filter -->
+    <div class="search-filter-section">
+      <div class="search-container">
+        <input type="text"
+               [(ngModel)]="searchTerm"
+               (ngModelChange)="filterProjects()"
+               class="search-input"
+               placeholder="Search projects by store code, name, city...">
+        <i class="search-icon">🔍</i>
+      </div>
+      <!-- In search-filter-section, after search container -->
+      <!--<div class="search-container">-->
+      <!-- <button class="btn-secondary" (click)="showCreateUser()" *ngIf="canAdd()"><i class="icon">👤</i>Manage Users</button>
+      -->
+      <!--</div>-->
+      <!-- <div class="filter-actions">
+        <button class="btn-secondary" (click)="showCreateUser()" *ngIf="canAdd()">
+          <i class="icon">👤</i>
+          Manage Users
+        </button>
+      </div>-->
+    </div>
+
+    <!-- Projects Table -->
+    <!-- Projects Table with Column Filters -->
+    <div class="projects-table-section">
+      <div class="table-header">
+        <h3>Projects ({{ filteredProjects.length }})</h3>
+        <div class="table-actions">
+          <button class="btn-secondary" (click)="clearAllFilters()" title="Clear All Filters">
+            <i class="icon">🗑️</i> Clear Filters
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <!-- Column Filters Row -->
+            <tr class="filter-row">
+              <th>
+                <input type="text"
+                       placeholder="Filter Store Code"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.store_code"
+                       class="filter-input"
+                       title="Filter by Store Code">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('store_code')"
+                        *ngIf="filters.store_code">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter Store Name"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.store_name"
+                       class="filter-input"
+                       title="Filter by Store Name">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('store_name')"
+                        *ngIf="filters.store_name">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter Project Code"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.project_code"
+                       class="filter-input"
+                       title="Filter by Project Code">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('project_code')"
+                        *ngIf="filters.project_code">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.zone"
+                        class="filter-input"
+                        title="Filter by Zone">
+                  <option value="">All Zones</option>
+                  <option value="CENTRAL">CENTRAL</option>
+                  <option value="WEST">WEST</option>
+                  <option value="EAST">EAST</option>
+                  <option value="NORTH">NORTH</option>
+                  <option value="SOUTH">SOUTH</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('zone')"
+                        *ngIf="filters.zone">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter City"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.city"
+                       class="filter-input"
+                       title="Filter by City">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('city')"
+                        *ngIf="filters.city">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.state"
+                        class="filter-input"
+                        title="Filter by State">
+                  <option value="">All States</option>
+                  <option *ngFor="let state of getUniqueValues('state')" [value]="state">{{ state }}</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('state')"
+                        *ngIf="filters.state">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter Lat/Long"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.site_lat_long"
+                       class="filter-input"
+                       title="Filter by Coordinates">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('site_lat_long')"
+                        *ngIf="filters.site_lat_long">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.store_type"
+                        class="filter-input"
+                        title="Filter by Store Type">
+                  <option value="">All Store Types</option>
+                  <option value="Dark Store">Dark Store</option>
+                  <option value="Super Store">Super Store</option>
+                  <option value="Cafe">Cafe</option>
+                  <option value="Relocation">Relocation</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('store_type')"
+                        *ngIf="filters.store_type">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.site_type"
+                        class="filter-input"
+                        title="Filter by Site Type">
+                  <option value="">All Site Types</option>
+                  <option value="BTS">BTS</option>
+                  <option value="Semi BTS">Semi BTS</option>
+                  <option value="RTM">RTM</option>
+                  <option value="C&E">C&E</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('site_type')"
+                        *ngIf="filters.site_type">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.project_status"
+                        class="filter-input"
+                        title="Filter by Project Status">
+                  <option value="">All Status</option>
+                  <option value="LL WIP">LL WIP</option>
+                  <option value="Fitout WIP">Fitout WIP</option>
+                  <option value="LLHO DONE">LLHO DONE</option>
+                  <option value="Project HO Complete">Project HO Complete</option>
+                  <option value="LAUNCHED">LAUNCHED</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('project_status')"
+                        *ngIf="filters.project_status">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="date"
+                       (change)="applyColumnFilter()"
+                       [(ngModel)]="filters.ll_ho_date"
+                       class="filter-input"
+                       title="Filter by LL HO Date">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('ll_ho_date')"
+                        *ngIf="filters.ll_ho_date">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="date"
+                       (change)="applyColumnFilter()"
+                       [(ngModel)]="filters.launch_date"
+                       class="filter-input"
+                       title="Filter by Launch Date">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('launch_date')"
+                        *ngIf="filters.launch_date">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="date"
+                       (change)="applyColumnFilter()"
+                       [(ngModel)]="filters.project_handover_date"
+                       class="filter-input"
+                       title="Filter by Handover Date">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('project_handover_date')"
+                        *ngIf="filters.project_handover_date">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.layout"
+                        class="filter-input"
+                        title="Filter by Layout">
+                  <option value="">All Layouts</option>
+                  <option value="Completed">Completed</option>
+                  <option value="WIP">WIP</option>
+                  <option value="Not Started">Not Started</option>
+                  <option value="NA">NA</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('layout')"
+                        *ngIf="filters.layout">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.token_released"
+                        class="filter-input"
+                        title="Filter by Token Released">
+                  <option value="">All</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('token_released')"
+                        *ngIf="filters.token_released">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <select (change)="applyColumnFilter()"
+                        [(ngModel)]="filters.criticality"
+                        class="filter-input"
+                        title="Filter by Criticality">
+                  <option value="">All Criticality</option>
+                  <option value="P0">P0</option>
+                  <option value="P1">P1</option>
+                  <option value="P2">P2</option>
+                </select>
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('criticality')"
+                        *ngIf="filters.criticality">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter Address"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.address"
+                       class="filter-input"
+                       title="Filter by Address">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('address')"
+                        *ngIf="filters.address">
+                  ×
+                </button>
+              </th>
+
+              <th>
+                <input type="text"
+                       placeholder="Filter Created By"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.created_by"
+                       class="filter-input"
+                       title="Filter by Created By">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('created_by')"
+                        *ngIf="filters.created_by">
+                  ×
+                </button>
+              </th>
+              <th>
+                <input type="text"
+                       placeholder="Filter Recee Status"
+                       (input)="applyColumnFilter()"
+                       [(ngModel)]="filters.recee_status"
+                       class="filter-input"
+                       title="Filter by Recee Status">
+                <button class="clear-filter-btn"
+                        (click)="clearFilter('recee_status')"
+                        *ngIf="filters.recee_status">
+                  ×
+                </button>
+              </th>
+
+              <th></th> <!-- Created At - no filter needed -->
+              <th></th> <!-- Assigned Users Count - no filter needed -->
+              <th></th> <!-- Tasks Count - no filter needed -->
+              <th *ngIf="canEdit() || canDelete() || canView()"></th> <!-- Actions -->
+            </tr>
+
+            <!-- Original Header Row -->
+            <tr>
+              <th>Store Code</th>
+              <th>
+                Store Name   <div class="column-resizer"
+                                  (mousedown)="startResize($event, 1)"></div>
+              </th>
+              <th>Project Code</th>
+              <th>Zone</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Site Lat/Long</th>
+              <th>Store Type</th>
+              <th>Site Type</th>
+              <th>Project Status</th>
+              <th>LL HO Date</th>
+              <th>Launch Date</th>
+              <th>Project Handover Date</th>
+              <th>Layout</th>
+              <th>Token Released</th>
+              <th>Criticality</th>
+              <th>Address</th>
+              <th>Created By</th>
+              <th>RECEE Status</th>
+              <th>Created At</th>
+              <!--   <th>Assigned Users Count</th>-->
+              <th>Tasks Count</th>
+              <th *ngIf="canEdit() || canDelete() || canView()">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let project of filteredProjects" (dblclick)="onRowDoubleClick($event, project)" class="table-row">
+              <td>{{ project.store_code }}</td>
+              <td>{{ project.store_name }}</td>
+              <td>{{ project.project_code }}</td>
+              <td>{{ project.zone || '' }}</td>
+              <td>{{ project.city || '' }}</td>
+              <td>{{ project.state || '' }}</td>
+              <td>{{ project.site_lat_long || '' }}</td>
+              <td>{{ project.store_type || '' }}</td>
+              <td>{{ project.site_type || '' }}</td>
+              <td>{{ project.project_status || '' }}</td>
+              <td>{{ project.ll_ho_date ? (project.ll_ho_date | date) : '' }}</td>
+              <td>{{ project.launch_date ? (project.launch_date | date) : '' }}</td>
+              <td>{{ project.project_handover_date ? (project.project_handover_date | date) : '' }}</td>
+              <td>{{ project.layout || '' }}</td>
+              <td>{{ project.token_released || '' }}</td>
+              <td>{{ project.criticality || '' }}</td>
+              <td>{{ project.address || '' }}</td>
+
+              <td>{{ project.created_by_email ? (project.created_by_email | slice:0:(project.created_by_email.indexOf('@'))) : '' }}</td>
+              <td>{{ project.recee_status || '' }}</td>
+              <td>{{ project.created_at ? (project.created_at | date) : '' }}</td>
+              <!-- <td>{{ project.assigned_users?.length || 0 }}</td>-->
+              <td>{{ project.tasks_count || 0 }}</td>
+              <td *ngIf="canEdit() || canDelete() || canView()">
+                <button class="btn-action view" (click)="showProjectDetails(project)" title="View Project Details">👁️</button>
+                <button class="btn-action edit" (click)="editProject(project)" *ngIf="canEdit()" title="Edit Project">✏️</button>
+                <button class="btn-action delete" (click)="confirmDeleteProject(project)" *ngIf="canDelete()" title="Delete Project">🗑️</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredProjects.length === 0">
+              <td colspan="22" class="no-data">No projects found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Detail View with Attachments Section -->
+  <div class="view-project-section" *ngIf="showViewProject && viewProject">
+    <div class="view-project-container">
+      <!-- Header with Back Button -->
+      <div class="view-project-header">
+        <button class="btn-back" (click)="closeProjectView()">
+          <i class="icon">←</i>
+          Back to Projects
+        </button>
+        <h2>{{ viewProject.store_name }} - Project Details</h2>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="loadingProjectDetails">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          Loading project details...
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="view-project-content" *ngIf="!loadingProjectDetails">
+
+        <!-- Left Side - Project Details -->
+        <div class="project-details-panel">
+          <div class="details-card">
+            <div class="card-header">
+              <h3>Project Information</h3>
+              <span class="status-badge" [class]="getStatusClass(viewProject.project_status)">
+                {{ viewProject.project_status }}
+              </span>
+            </div>
+
+            <div class="details-content">
+              <!-- Basic Information -->
+              <div class="detail-section">
+                <h4>Basic Information</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>Store Code:</label>
+                    <span>{{ viewProject.store_code }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Store Name:</label>
+                    <span>{{ viewProject.store_name }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Project Code:</label>
+                    <span>{{ viewProject.project_code }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Criticality:</label>
+                    <span class="criticality-badge" [class]="'criticality-' + (viewProject.criticality || 'none').toLowerCase()">
+                      {{ viewProject.criticality || 'Not Set' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location Details -->
+              <div class="detail-section">
+                <h4>Location Details</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>Zone:</label>
+                    <span>{{ viewProject.zone || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>City:</label>
+                    <span>{{ viewProject.city || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>State:</label>
+                    <span>{{ viewProject.state || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Coordinates:</label>
+                    <span>{{ viewProject.site_lat_long || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item full-width">
+                    <label>Address:</label>
+                    <span>{{ viewProject.address || 'Not specified' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Site Information -->
+              <div class="detail-section">
+                <h4>Site Information</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>Store Type:</label>
+                    <span>{{ viewProject.store_type || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Site Type:</label>
+                    <span>{{ viewProject.site_type || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Property Area:</label>
+                    <span>{{ viewProject.property_area_sqft ? (viewProject.property_area_sqft + ' sqft') : 'Not specified' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Important Dates -->
+              <div class="detail-section">
+                <h4>Important Dates</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>LL HO Date:</label>
+                    <span>{{ formatDate(viewProject.ll_ho_date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Launch Date:</label>
+                    <span>{{ formatDate(viewProject.launch_date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Project Handover:</label>
+                    <span>{{ formatDate(viewProject.project_handover_date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>LOI Release Date:</label>
+                    <span>{{ formatDate(viewProject.loi_release_date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Token Release Date:</label>
+                    <span>{{ formatDate(viewProject.token_release_date) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Recee Date:</label>
+                    <span>{{ formatDate(viewProject.recee_date) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Information -->
+              <div class="detail-section">
+                <h4>Status Information</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>Recee Status:</label>
+                    <span>{{ viewProject.recee_status || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>LOI Signed Status:</label>
+                    <span>{{ viewProject.loi_signed_status || 'Not specified' }}</span>
+                  </div>
+                  <div class="detail-item full-width">
+                    <label>Layout:</label>
+                    <span>{{ viewProject.layout || 'Not specified' }}</span>
+                  </div>
+
+                  <div class="detail-item">
+                    <label>Actual Carpet Area (sqft):</label>
+                    <span>{{ viewProject.actual_carpet_area_sqft ? (viewProject.actual_carpet_area_sqft + ' sqft') : 'Not specified' }}</span>
+                  </div>
+
+                  <!-- Token Released -->
+                  <div class="detail-item">
+                    <label>Token Released:</label>
+                    <span>{{ viewProject.token_released || 'Not specified' }}</span>
+                  </div>
+
+                  <!-- Power Availability -->
+                  <div class="detail-item">
+                    <label>Power Availability (kVA):</label>
+                    <span>{{ viewProject.power_availability_kva || 'Not specified' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project Metadata -->
+              <div class="detail-section">
+                <h4>Project Metadata</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <label>Created By:</label>
+                    <span>{{ viewProject.created_by_email || viewProject.created_by }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Created At:</label>
+                    <span>{{ viewProject.created_at | date:'medium' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Last Updated:</label>
+                    <span>{{ viewProject.updated_at | date:'medium' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Documents Section -->
+              <div class="detail-section" *ngIf="viewProject.documents && viewProject.documents.length > 0">
+                <h4>Documents</h4>
+                <div class="documents-list">
+                  <div class="document-item" *ngFor="let doc of viewProject.documents">
+                    <i class="document-icon">📄</i>
+                    <span>{{ doc.document_name }}</span>
+                    <small>{{ doc.created_at | date:'short' }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NEW ATTACHMENTS SECTION -->
+          <div class="attachments-card">
+            <div class="card-header">
+              <h3>Project Attachments</h3>
+              <span class="attachments-count">{{ viewProjectAttachments.length }} Items</span>
+            </div>
+
+            <!-- Loading Attachments -->
+            <div class="loading-state" *ngIf="loadingAttachments">
+              <div class="loading-spinner">
+                <div class="spinner"></div>
+                Loading attachments...
+              </div>
+            </div>
+
+            <!-- No Attachments State -->
+            <div class="no-attachments-state" *ngIf="!loadingAttachments && viewProjectAttachments.length === 0">
+              <div class="empty-state">
+                <i class="empty-icon">📎</i>
+                <h4>No Attachments Found</h4>
+                <p>No media files have been uploaded for this project's tasks yet.</p>
+              </div>
+            </div>
+
+            <!-- Attachments List -->
+            <div class="attachments-content" *ngIf="!loadingAttachments && viewProjectAttachments.length > 0">
+              <div class="attachment-item" *ngFor="let comment of viewProjectAttachments">
+                <div class="attachment-header">
+                  <div class="attachment-info">
+                    <!-- <h5>{{ comment.task_title }}</h5>-->
+                    <div class="attachment-meta">
+                      <span class="user-email">{{ comment.user_email || 'Unknown User' }}</span>
+                      <span class="upload-date">{{ formatDateTime(comment.created_at) }}</span>
+                    </div>
+                    <p class="comment-text" *ngIf="comment.comment_text">{{ comment.comment_text }}</p>
+                  </div>
+                </div>
+
+                <div class="media-grid">
+                  <div class="media-item" *ngFor="let media of comment.media_files">
+                    <div class="media-thumbnail">
+                      <!-- Image Preview -->
+                      <div class="image-preview" *ngIf="isImage(media.file_type)">
+                        <img [src]="getMediaUrl(media.file_path)"
+                             [alt]="media.file_name"
+                             (click)="openMediaModal(media)"
+                             class="preview-image">
+                        <div class="media-overlay">
+                          <button class="view-button" (click)="openMediaModal(media)">
+                            <i class="icon">👁️</i>
+                            View
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Video Preview -->
+                      <div class="video-preview" *ngIf="isVideo(media.file_type)">
+                        <video class="preview-video" preload="metadata">
+                          <source [src]="getMediaUrl(media.file_path)" [type]="'video/' + media.file_type">
+                        </video>
+                        <div class="media-overlay">
+                          <button class="view-button" (click)="openMediaModal(media)">
+                            <i class="icon">▶️</i>
+                            Play
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- File Preview for other types -->
+                      <div class="file-preview" *ngIf="!isImage(media.file_type) && !isVideo(media.file_type)">
+                        <div class="file-icon">📄</div>
+                        <div class="media-overlay">
+                          <button class="view-button" (click)="openMediaModal(media)">
+                            <i class="icon">📄</i>
+                            Open
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="media-details">
+                      <div class="media-name">{{ media.file_name }}</div>
+                      <div class="media-info">
+                        <span class="file-type">{{ media.file_type?.toUpperCase() }}</span>
+                        <span class="file-size">{{ getFileSize(media.file_size) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side - Assigned Users and Progress -->
+        <div class="users-progress-panel">
+          <div class="users-card">
+            <div class="card-header">
+              <h3>Assigned Users & Progress</h3>
+              <span class="users-count">{{ viewProjectUsers.length }} Users</span>
+            </div>
+
+            <div class="users-content">
+              <!-- No Users State -->
+              <div class="no-users-state" *ngIf="viewProjectUsers.length === 0">
+                <div class="empty-state">
+                  <i class="empty-icon">👥</i>
+                  <h4>No Users Assigned</h4>
+                  <p>This project doesn't have any assigned users yet.</p>
+                </div>
+              </div>
+
+              <!-- Users List -->
+              <div class="users-list" *ngIf="viewProjectUsers.length > 0">
+                <div class="user-item" *ngFor="let user of viewProjectUsers">
+                  <div class="user-header">
+                    <div class="user-info">
+                      <div class="user-avatar">
+                        <i class="avatar-icon">👤</i>
+                      </div>
+                      <div class="user-details">
+                        <h5>{{ user.email }}</h5>
+                        <div class="user-roles">
+                          <span class="role-badge project-role">{{ user.role }}</span>
+                          <span class="role-badge user-role">{{ user.user_role }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="user-progress-circle">
+                      <div class="progress-circle" [style.background]="'conic-gradient(from 0deg, ' + getUserProgressColor(user.taskStats.avg_progress) + ' 0deg ' + (user.taskStats.avg_progress * 3.6) + 'deg, #e0e0e0 ' + (user.taskStats.avg_progress * 3.6) + 'deg 360deg)'">
+                        <div class="progress-inner">
+                          <span>{{ user.taskStats.avg_progress }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="user-stats">
+                    <div class="stats-grid">
+                      <div class="stat-item">
+                        <span class="stat-value">{{ user.taskStats.total }}</span>
+                        <span class="stat-label">Total Tasks</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-value completed">{{ user.taskStats.completed }}</span>
+                        <span class="stat-label">Completed</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-value in-progress">{{ user.taskStats.in_progress }}</span>
+                        <span class="stat-label">In Progress</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-value todo">{{ user.taskStats.todo }}</span>
+                        <span class="stat-label">To Do</span>
+                      </div>
+                      <div class="stat-item" *ngIf="user.taskStats.on_hold > 0">
+                        <span class="stat-value on-hold">{{ user.taskStats.on_hold }}</span>
+                        <span class="stat-label">On Hold</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- User Tasks List -->
+                  <div class="user-tasks" *ngIf="user.tasks && user.tasks.length > 0">
+                    <div class="tasks-header">
+                      <h6>Tasks ({{ user.tasks.length }})</h6>
+                    </div>
+                    <div class="tasks-list">
+                      <div class="task-item" *ngFor="let task of user.tasks">
+                        <div class="task-content">
+                          <div class="task-info">
+                            <h6>{{ task.title }}</h6>
+                            <p *ngIf="task.description">{{ task.description }}</p>
+                          </div>
+                          <div class="task-meta">
+                            <span class="task-status" [class]="getTaskStatusClass(task.status)">
+                              {{ task.status }}
+                            </span>
+                            <span class="task-priority" [class]="getTaskPriorityClass(task.priority)">
+                              {{ task.priority }}
+                            </span>
+                            <div class="task-progress">
+                              <div class="progress-bar">
+                                <div class="progress-fill" [style.width.%]="task.progress_percentage"></div>
+                              </div>
+                              <span class="progress-text">{{ task.progress_percentage }}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="task-dates" *ngIf="task.due_date">
+                          <small>Due: {{ formatDate(task.due_date) }}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- No Tasks State -->
+                  <div class="no-tasks-state" *ngIf="!user.tasks || user.tasks.length === 0">
+                    <small class="text-muted">No tasks assigned to this user</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Summary Stats -->
+          <div class="project-summary-card">
+            <div class="card-header">
+              <h3>Project Summary</h3>
+            </div>
+            <div class="summary-content">
+              <div class="summary-stats">
+                <div class="summary-item">
+                  <div class="summary-icon">📊</div>
+                  <div class="summary-info">
+                    <span class="summary-value">{{ viewProjectTasks.length }}</span>
+                    <span class="summary-label">Total Tasks</span>
+                  </div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-icon">👥</div>
+                  <div class="summary-info">
+                    <span class="summary-value">{{ viewProjectUsers.length }}</span>
+                    <span class="summary-label">Team Members</span>
+                  </div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-icon">✅</div>
+                  <div class="summary-info">
+                    <span class="summary-value">{{ getCompletedTasksCount() }}</span>
+                    <span class="summary-label">Completed Tasks</span>
+                  </div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-icon">📎</div>
+                  <div class="summary-info">
+                    <span class="summary-value">{{ viewProjectAttachments.length }}</span>
+                    <span class="summary-label">Attachments</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Modal -->
+  <div class="media-modal-overlay" *ngIf="showMediaModal" (click)="closeMediaModal()">
+    <div class="media-modal-content" (click)="$event.stopPropagation()">
+      <div class="media-modal-header">
+        <h3>{{ selectedMedia?.file_name }}</h3>
+        <button class="close-button" (click)="closeMediaModal()">
+          <i class="icon">×</i>
+        </button>
+      </div>
+
+      <div class="media-modal-body">
+        <!-- Image Display -->
+        <div class="modal-image-container" *ngIf="selectedMedia && isImage(selectedMedia.file_type)">
+          <img [src]="getMediaUrl(selectedMedia.file_path)"
+               [alt]="selectedMedia.file_name"
+               class="modal-image">
+        </div>
+
+        <!-- Video Display -->
+        <div class="modal-video-container" *ngIf="selectedMedia && isVideo(selectedMedia.file_type)">
+          <video controls class="modal-video">
+            <source [src]="getMediaUrl(selectedMedia.file_path)" [type]="'video/' + selectedMedia.file_type">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <!-- File Info for other types -->
+        <div class="modal-file-info" *ngIf="selectedMedia && !isImage(selectedMedia.file_type) && !isVideo(selectedMedia.file_type)">
+          <div class="file-icon-large">📄</div>
+          <h4>{{ selectedMedia.file_name }}</h4>
+          <p>File Type: {{ selectedMedia.file_type?.toUpperCase() }}</p>
+          <p>File Size: {{ getFileSize(selectedMedia.file_size) }}</p>
+          <a [href]="getMediaUrl(selectedMedia.file_path)" target="_blank" class="download-button">
+            Download File
+          </a>
+        </div>
+      </div>
+
+      <div class="media-modal-footer">
+        <div class="media-info">
+          <span>Type: {{ selectedMedia?.file_type?.toUpperCase() }}</span>
+          <span>Size: {{ getFileSize(selectedMedia?.file_size) }}</span>
+        </div>
+        <a [href]="getMediaUrl(selectedMedia?.file_path)"
+           target="_blank"
+           class="download-link">
+          Download
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Project Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDeleteProject()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the project:</p>
+        <p class="project-details" *ngIf="projectToDelete">
+          <strong>{{ projectToDelete.store_name }}</strong> ({{ projectToDelete.project_code }})
+        </p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cancelDeleteProject()">
+          Cancel
+        </button>
+        <button type="button" class="btn-delete" (click)="deleteProject()">
+          Delete Project
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete User Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteUserModal" (click)="cancelDeleteUser()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Delete User</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the user:</p>
+        <p class="user-details" *ngIf="userToDelete">
+          <strong>{{ userToDelete.email }}</strong> ({{ userToDelete.role }})
+        </p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cancelDeleteUser()">
+          Cancel
+        </button>
+        <button type="button" class="btn-delete" (click)="deleteUser()">
+          Delete User
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Management Section -->
+  <div class="users-management-section" *ngIf="showUserForm && !selectedUser">
+    <div class="users-list-container">
+      <div class="users-header">
+        <h3>User Management</h3>
+        <button class="btn-primary" (click)="showCreateUser()" *ngIf="canAdd()">
+          <i class="icon">+</i>
+          Add New User
+        </button>
+      </div>
+
+      <!-- Users Table -->
+      <div class="users-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created At</th>
+              <th>Last Updated</th>
+              <th *ngIf="canEdit() || canDelete()">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="role-badge" [class]="'role-' + user.role.toLowerCase().replace(' ', '-')">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>{{ user.created_at | date:'short' }}</td>
+              <td>{{ user.updated_at | date:'short' }}</td>
+              <td *ngIf="canEdit() || canDelete()" class="actions-cell">
+                <button class="btn-action edit"
+                        (click)="editUser(user)"
+                        *ngIf="canEdit()"
+                        title="Edit User">
+                  ✏️
+                </button>
+                <button class="btn-action delete"
+                        (click)="confirmDeleteUser(user)"
+                        *ngIf="canDelete()"
+                        title="Delete User">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="users.length === 0">
+              <td colspan="5" class="no-data">No users found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- State-City Editor Modal/Section -->
+  <!-- State-City Data Management Modal -->
+  <div class="state-city-editor-overlay" *ngIf="showStateCityEditor" (click)="showStateCityEditor = false">
+    <div class="state-city-editor-modal" (click)="$event.stopPropagation()">
+      <div class="editor-header">
+        <h4><i class="fas fa-database"></i> State & City Management</h4>
+        <button class="btn-close" (click)="showStateCityEditor = false">&times;</button>
+      </div>
+
+      <div class="editor-body">
+        <!-- Error Alert -->
+        <div *ngIf="stateCityError" class="alert alert-error">
+          <strong>Error:</strong> {{ stateCityError }}
+        </div>
+
+        <!-- Toolbar -->
+        <div class="editor-toolbar">
+          <button class="btn btn-success btn-sm" (click)="saveAllChanges()">
+            <i class="fas fa-save"></i> Save All
+          </button>
+          <button class="btn btn-primary btn-sm" (click)="addNewRow()">
+            <i class="fas fa-plus"></i> Add Row
+          </button>
+       
+        </div>
+
+        <!-- Responsive Table -->
+        <div class="table-container">
+          <table class="editor-table">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>State Code</th>
+                <th>District Code</th>
+                <th>District Name</th>
+                <th>Town Code</th>
+                <th>Town Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of stateCityRows; let i = index" [class.editing]="editingRowIndex === i">
+                <!-- State -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row.State" class="input-sm" placeholder="State">
+                  <span *ngIf="editingRowIndex !== i">{{ row.State || '-' }}</span>
+                </td>
+                <!-- State Code -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['State Code']" class="input-sm" placeholder="Code">
+                  <span *ngIf="editingRowIndex !== i">{{ row['State Code'] || '-' }}</span>
+                </td>
+                <!-- District Code -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Code']" class="input-sm" placeholder="Code">
+                  <span *ngIf="editingRowIndex !== i">{{ row['District Code'] || '-' }}</span>
+                </td>
+                <!-- District Name -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['District Name']" class="input-sm" placeholder="District">
+                  <span *ngIf="editingRowIndex !== i">{{ row['District Name'] || '-' }}</span>
+                </td>
+                <!-- Town Code -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Code']" class="input-sm" placeholder="Code">
+                  <span *ngIf="editingRowIndex !== i">{{ row['Town Code'] || '-' }}</span>
+                </td>
+                <!-- Town Name -->
+                <td>
+                  <input *ngIf="editingRowIndex === i" type="text" [(ngModel)]="row['Town Name']" class="input-sm" placeholder="Town">
+                  <span *ngIf="editingRowIndex !== i">{{ row['Town Name'] || '-' }}</span>
+                </td>
+                <!-- Actions -->
+                <td class="actions">
+                  <div *ngIf="editingRowIndex === i" class="btn-group">
+                    <button class="btn btn-save" (click)="saveRow(i)" title="Save"><i class="fas fa-check"></i></button>
+                    <button class="btn btn-cancel" (click)="cancelEdit()" title="Cancel"><i class="fas fa-times"></i></button>
+                  </div>
+                  <div *ngIf="editingRowIndex !== i" class="btn-group">
+                    <button class="btn btn-edit" (click)="startEdit(i)" title="Edit"><i class="fas fa-edit">Update</i></button>
+                    <button class="btn btn-delete" (click)="deleteRow(i)" title="Delete"><i class="fas fa-trash">Remove</i></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <small>Total Entries: {{ stateCityRows.length }}</small>
+        <button class="btn btn-outline" (click)="showStateCityEditor = false">Close</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+

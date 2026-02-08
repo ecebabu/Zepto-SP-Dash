@@ -1,0 +1,193 @@
+<!-- login.component.html -->
+<div class="login-container">
+  <!-- Left side - Illustration -->
+  <div class="image-section">
+    <div class="illustration-wrapper">
+      <svg class="construction-illustration" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background elements -->
+        <defs>
+          <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+
+        <!-- Sky background -->
+        <rect width="800" height="600" fill="url(#skyGradient)" />
+
+        <!-- Clouds -->
+        <ellipse cx="120" cy="80" rx="40" ry="20" fill="rgba(255,255,255,0.2)" />
+        <ellipse cx="140" cy="85" rx="35" ry="18" fill="rgba(255,255,255,0.2)" />
+        <ellipse cx="350" cy="60" rx="45" ry="22" fill="rgba(255,255,255,0.2)" />
+        <ellipse cx="680" cy="90" rx="38" ry="19" fill="rgba(255,255,255,0.2)" />
+
+        <!-- Monitor/Computer -->
+        <rect x="50" y="200" width="300" height="200" rx="15" fill="#2D3748" />
+        <rect x="65" y="215" width="270" height="170" rx="8" fill="#A855F7" />
+
+        <!-- Chart bars inside monitor -->
+        <rect x="100" y="320" width="25" height="40" fill="#F59E0B" />
+        <rect x="135" y="300" width="25" height="60" fill="#F59E0B" />
+        <rect x="170" y="280" width="25" height="80" fill="#F59E0B" />
+        <rect x="205" y="260" width="25" height="100" fill="#F59E0B" />
+        <rect x="240" y="240" width="25" height="120" fill="#F59E0B" />
+
+        <!-- Upward arrow -->
+        <polygon points="280,240 300,220 290,225 290,250 280,250" fill="#F59E0B" />
+
+        <!-- Monitor stand -->
+        <rect x="170" y="400" width="60" height="15" fill="#2D3748" />
+        <rect x="190" y="415" width="20" height="30" fill="#2D3748" />
+        <rect x="160" y="445" width="80" height="10" fill="#2D3748" />
+
+        <!-- Construction worker -->
+        <g id="worker">
+          <!-- Body -->
+          <rect x="25" y="320" width="40" height="80" fill="#4338CA" />
+          <!-- Safety vest -->
+          <rect x="25" y="320" width="40" height="60" fill="#F59E0B" />
+          <!-- Vest stripes -->
+          <rect x="25" y="335" width="40" height="4" fill="white" />
+          <rect x="25" y="355" width="40" height="4" fill="white" />
+          <!-- Head -->
+          <circle cx="45" cy="305" r="15" fill="#FED7AA" />
+          <!-- Hard hat -->
+          <ellipse cx="45" cy="295" rx="18" ry="12" fill="#F59E0B" />
+          <!-- Arms -->
+          <rect x="10" y="340" width="15" height="35" fill="#4338CA" />
+          <rect x="65" y="340" width="15" height="35" fill="#4338CA" />
+          <!-- Pointing arm -->
+          <rect x="65" y="320" width="30" height="8" fill="#4338CA" transform="rotate(-20 65 324)" />
+          <!-- Hand -->
+          <circle cx="95" cy="315" r="5" fill="#FED7AA" />
+          <!-- Legs -->
+          <rect x="30" y="400" width="12" height="35" fill="#1E293B" />
+          <rect x="48" y="400" width="12" height="35" fill="#1E293B" />
+          <!-- Feet -->
+          <ellipse cx="36" cy="440" rx="8" ry="5" fill="#0F172A" />
+          <ellipse cx="54" cy="440" rx="8" ry="5" fill="#0F172A" />
+        </g>
+
+        <!-- Building under construction -->
+        <rect x="500" y="300" width="150" height="200" fill="#4338CA" />
+        <rect x="500" y="300" width="150" height="200" fill="rgba(255,255,255,0.1)" />
+
+        <!-- Building windows -->
+        <rect x="520" y="320" width="25" height="30" fill="#1E293B" />
+        <rect x="560" y="320" width="25" height="30" fill="#1E293B" />
+        <rect x="600" y="320" width="25" height="30" fill="#1E293B" />
+        <rect x="520" y="370" width="25" height="30" fill="#1E293B" />
+        <rect x="560" y="370" width="25" height="30" fill="#1E293B" />
+        <rect x="600" y="370" width="25" height="30" fill="#1E293B" />
+
+        <!-- Awning -->
+        <path d="M 500 500 L 650 500 L 650 480 L 500 480 Q 490 485 500 500" fill="#F59E0B" />
+
+        <!-- Construction crane -->
+        <rect x="680" y="150" width="8" height="300" fill="#F59E0B" />
+        <!-- Crane arm -->
+        <rect x="600" y="145" width="150" height="8" fill="#F59E0B" />
+        <!-- Crane support -->
+        <polygon points="680,150 720,180 680,180" fill="#F59E0B" />
+        <!-- Hook -->
+        <rect x="595" y="153" width="2" height="20" fill="#1E293B" />
+        <rect x="590" y="173" width="12" height="6" fill="#6B7280" />
+
+        <!-- Traffic cone -->
+        <polygon points="420,480 440,480 435,440 425,440" fill="#F59E0B" />
+        <rect x="422" y="445" width="16" height="4" fill="white" />
+        <rect x="422" y="455" width="16" height="4" fill="white" />
+        <rect x="422" y="465" width="16" height="4" fill="white" />
+
+        <!-- Construction barrier -->
+        <rect x="450" y="470" width="80" height="30" fill="#F59E0B" />
+        <rect x="450" y="475" width="80" height="4" fill="white" />
+        <rect x="450" y="485" width="80" height="4" fill="white" />
+        <rect x="450" y="495" width="80" height="4" fill="white" />
+
+        <!-- Small plant decoration -->
+        <ellipse cx="30" cy="480" rx="15" ry="8" fill="#1E293B" />
+        <path d="M 25 475 Q 30 460 35 475" fill="#10B981" />
+        <path d="M 30 475 Q 35 460 40 475" fill="#10B981" />
+        <path d="M 20 475 Q 25 465 30 475" fill="#10B981" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Right side - Login Form -->
+  <div class="form-section">
+    <div class="logo">
+      <h1>SP'DASH</h1>
+    </div>
+
+    <div class="form-header">
+      <h2>Welcome Back</h2>
+      <p>Sign in to your account to continue</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input type="email"
+                 id="email"
+                 formControlName="email"
+                 class="form-control"
+                 [class.error]="hasFieldError('email')"
+                 placeholder="Enter your email address"
+                 (focus)="onInputFocus('email')"
+                 autocomplete="email">
+        </div>
+        <div class="error-message" *ngIf="hasFieldError('email')">
+          {{ getEmailErrorMessage() }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input type="password"
+                 id="password"
+                 formControlName="password"
+                 class="form-control"
+                 [class.error]="hasFieldError('password')"
+                 placeholder="Enter your password"
+                 (focus)="onInputFocus('password')"
+                 autocomplete="current-password">
+        </div>
+        <div class="error-message" *ngIf="hasFieldError('password')">
+          {{ getPasswordErrorMessage() }}
+        </div>
+      </div>
+
+    
+
+      <!-- Error Alert -->
+      <div class="error-alert" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+              class="btn-login"
+              [disabled]="loading || loginForm.invalid">
+        <span *ngIf="loading" class="spinner"></span>
+        {{ getButtonText() }}
+      </button>
+    </form>
+
+    <!-- Support Information -->
+    <div class="support-info">
+      <p>Need help? Contact our support team</p>
+      <a href="mailto:sandeepsingh2&#64;zepto.com"
+         class="support-email"
+         (click)="onSupportClick()">
+        support&#64;zepto.com
+      </a>
+    </div>
+
+  
+  </div>
+</div>
