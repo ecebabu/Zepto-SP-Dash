@@ -545,8 +545,14 @@ private function getBearerToken() {
         $stmt->execute([$input['email']]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user || !password_verify($input['password'], $user['password'])) {
-            $this->sendError('Invalid credentials', 401);
+        if (!$user) {
+            error_log("Login failed: User not found for email " . $input['email']);
+            $this->sendError('Invalid credentials (User not found)', 401);
+        }
+
+        if (!password_verify($input['password'], $user['password'])) {
+            error_log("Login failed: Password mismatch for user " . $input['email']);
+            $this->sendError('Invalid credentials (Password incorrect)', 401);
         }
 
         // Create session token
