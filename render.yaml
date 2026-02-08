@@ -3,10 +3,8 @@ services:
     name: rdash-api
     runtime: docker
     dockerfilePath: ./Dockerfile
-    dockerContext: ./RDash
     region: oregon
     plan: free
-    healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
@@ -26,22 +24,12 @@ services:
         value: 10485760
       - key: UPLOAD_PATH
         value: /tmp/uploads
-      - key: DEBUG_MODE
-        value: false
 
   - type: web
     name: rdash-frontend
     runtime: static
-    buildCommand: cd RDash && npm install && npm run build -- --configuration=production
+    buildCommand: cd RDash && npm ci && npm run build -- --configuration=production
     staticPublishPath: RDash/dist/rdash/browser
-    pullRequestPreviewsEnabled: false
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
     routes:
       - type: rewrite
         source: /*
@@ -52,4 +40,3 @@ databases:
     databaseName: rdash
     user: rdash_user
     plan: free
-    region: oregon
