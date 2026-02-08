@@ -38,6 +38,7 @@ services:
     buildCommand: cd RDash && npm install && npm run build -- --configuration=production
     staticPublishPath: RDash/dist/rdash/browser
     branch: main
+    pullRequestPreviewsEnabled: false
     headers:
       - path: /*
         name: X-Frame-Options
